@@ -1,0 +1,32 @@
+
+.login {
+    font-size: 22px;
+    color: white;
+}
+
+.form {
+    margin-top: 80px;
+    height: 100%;
+    display: flex;
+    gap: 30px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.form_button {
+    display: flex;
+    margin: 10px auto;
+    max-width: 100%;
+}
+
+.input {
+    font-size: 18px;
+    display: flex;
+    text-align: center;
+    height: 20px;
+}
+
+#field_password {
+
+}

@@ -1,0 +1,41 @@
+
+.order {
+    height: 100%;
+}
+
+.order_wrapper {
+    width: 100%;
+    height: 100%;
+    font-size: 16px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.table_window {
+    box-sizing: border-box;
+    display: flex;
+    margin: 50px auto;
+    width: 95%;
+    border-radius: 5px;
+    padding: 5px;
+    border: azure 2px solid;
+    flex-direction: column;
+}
+
+.boxes {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: row-reverse;
+}
+
+.tables {
+    margin-top: 60px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    flex-direction: column;
+    align-items: center;
+    max-height: 120px;
+}
