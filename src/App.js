@@ -1,9 +1,10 @@
 import './App.css';
 import {HashRouter, Route, Routes} from "react-router-dom";
 import Home from "./pages/Home";
-import Order from "./pages/Order";
+import Tables from "./pages/Tables";
 import Login from "./pages/Login";
 import Navbar from "./components/Navbar";
+import Order from "./pages/Order";
 
 const App = () => {
 
@@ -16,8 +17,9 @@ const App = () => {
                     <Routes>
                         <Route path={"/"}>
                             <Route index element={<Home />}/>
-                            <Route path={'order'} element={<Order />}/>
+                            <Route path={'tables'} element={<Tables />}/>
                             <Route path={'login'} element={<Login />}/>
+                            <Route path={'order'} element={<Order />}/>
                         </Route>
                     </Routes>
                 </div>

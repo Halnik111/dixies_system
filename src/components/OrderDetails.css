@@ -1,0 +1,18 @@
+
+.orderListItem {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 0px;
+    margin: 0 8px;
+    border-bottom: 1px solid crimson;
+}
+
+.orderItem_remove {
+    margin: 5px 10px 0 5px;
+}
+
+.meal_wrapper {
+    display: flex;
+}

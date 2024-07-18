@@ -1,57 +1,123 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import './Order.css';
-import {io} from "socket.io-client";
-import {AuthContext} from "../context/AuthContext";
-import NoAccess from "../components/NoAccess";
 import apiReq from "../apiReq";
-import Table from "../components/Table";
+import {useLocation, useNavigate} from "react-router-dom";
+import OrderDetails from "../components/OrderDetails";
+import {AuthContext} from "../context/AuthContext";
+import {SocketContext} from "../context/SocketContext";
 
 const Order = () => {
-    const [socket, setSocket] = useState(null);
+    const [menu, setMenu] = useState([]);
+    const [orders, setOrders] = useState([]);
+    const [meals, setMeals] = useState([]);
     const { currentUser } = useContext(AuthContext);
-    const [tables, setTables] = useState([]);
+    const { socket } = useContext(SocketContext);
+    const location = useLocation();
+    const navigate = useNavigate();
+    let mealRef =useRef(0);
+    let orderRef = useRef(0);
+    
+    let priceRef = useRef(0);
 
     useEffect(() => {
-        setSocket(io('ws://localhost:8900/'));
+        fetchMenu();
+    }, []);
 
-        fetchTables()
-        }, []);
+    const fetchMenu = async () => {
+        await apiReq.get('/meals/getMeals')
+            .then(res => {
+                setMenu(res.data)
+            })
+    };
+    
+    const handleClick = (meal) => {
+        setMeals([
+            ...meals, {meal, index: mealRef.current}
+        ]);
+        mealRef.current = mealRef.current + 1;
+        priceRef.current += parseFloat(meal.price);
+    }
 
-    const fetchTables = () => {
-        apiReq.get("/tables/getTables")
-            .then(res => setTables(res.data))
+const menuKey = () => {
+        return menu.map(meal => <div key={meal._id} className={`menuKey ${meal.category}`} onClick={() => handleClick(meal)}>
+            {meal.name}
+        </div>)
+    };
+
+    const displayCurrentMealTicket = () => {
+        let index = 0;
+        return (
+            meals.map(meal => {
+                return (
+                    <div key={index++}>{meal.meal.name}</div>
+                )
+            })
+        )
+    }
+
+    const onNext = () => {
+        setOrders([
+            ...orders, {meals: meals, ref: orderRef.current, price: priceRef.current}
+        ]);
+        orderRef.current = orderRef.current + 1;
+        setMeals([]);
+        priceRef.current = 0;
+    }
+
+    const onConfirm = async () => {
+        const table = location.state.table;
+        let totalPrice = 0;
+        orders.forEach(a => totalPrice += a.price);
+        
+        const model = {
+            orders, currentUser, table, totalPrice
+        };
+         await apiReq.post('/order/newOrder', model)
+             .then(async res => {
+                 await apiReq.post('/tables/openTable', {table: table, orderId: res.data._id})
+             })
+             .then(() => {
+                 socket.emit('openTable', 'Opening table: ' + table);
+             })
+             .finally(() => navigate('/tables'))
+             .catch(err => console.log(err));
     }
 
     return (
         <div className={'order'}>
-            {currentUser ? (
-                    <div className={'order_wrapper'}>
-                        ORDER SYSTEM
-                <div className={'table_window'}>
-
-                    <div className={'boxes'}>
-                        {tables.map(table => <Table table={table} />)}
-                    </div>
-                    <div className={"tables"}>
-                        <div id={'t-10'} className={'table'}>S-10</div>
-                        <div id={'t-9'} className={'table'}>S-9</div>
-                        <div id={'t-8'} className={'table'}>S-8</div>
-                        <div id={'t-7'} className={'table'}>S-7</div>
-                        <div id={'t-6'} className={'table'}>S-6</div>
-                        <div id={'t-BAR'} className={'table'}>BAR</div>
-                        <div id={'t-4'} className={'table'}>S-4</div>
-                        <div id={'t-3'} className={'table'}>S-3</div>
-                        <div id={'t-2'} className={'table'}>S-2</div>
-                        <div id={'t-1'} className={'table'}>S-1</div>
+            <div className={'order_header'}>
+                <div className={'order_header_table_name'}>{location.state.table}</div>
+                <div className={'order_header_wrapper'}>
+                    <div className={'order_header_buttons'}>
+                        <div onClick={() => {onNext()}}>NEXT</div>
+                        <svg onClick={() => navigate('/tables')} width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 11L11 1" stroke="black" strokeWidth="2" strokeLinecap="round"/>
+                            <path d="M1 1L11 11" stroke="black" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                        <svg onClick={() => {onConfirm()}} width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M1 6.5C1 6.5 2.34315 11 4 11C5.5 11 12 1.5 12 1.5" stroke="black" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
                     </div>
                 </div>
-                    </div>
-            ) : (
-                <NoAccess />
-            )}
-            <div className={''}>
-
             </div>
+            <div className={'order_content'}>
+                <div className={"order_meals"}>
+                    <div className={'order_current'}>
+                        {displayCurrentMealTicket()}
+                    </div>
+                    <div className={'order_meals_divider'}></div>
+                    <OrderDetails orders={orders} setOrders={setOrders} />
+                </div>
+                <div className={'order_keyboard'}>
+                    <div className={'order_keyboard_custom'}>
+
+                    </div>
+                    <div className={'order_keyboard_keys'}>
+                        {menuKey()}
+                    </div>
+                </div>
+            </div>
+
         </div>
     );
 };

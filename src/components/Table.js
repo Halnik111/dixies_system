@@ -1,13 +1,17 @@
 import React, {useEffect, useState} from 'react';
 import "./Table.css";
 
-const Table = ({table}) => {
+const Table = ({table, setActiveTable}) => {
     const [tableColor, setTableColor] = useState("white");
 
 
     useEffect(() => {
         tableStyling();
-    },[table])
+    },[table]);
+
+    const clickTable = () => {
+        setActiveTable(table);
+    }
 
     const tableStyling = () => {
         if (table.status === "taken") {
@@ -16,10 +20,13 @@ const Table = ({table}) => {
         else if(table.status === "reserve") {
             setTableColor("orange")
         }
+        else if (table.status === 'open') {
+            setTableColor('white')
+        }
     }
 
     return (
-        <div className={"table"} style={{color: tableColor, borderColor: tableColor}}>
+        <div id={table.name} className={"table"} style={{color: tableColor, borderColor: tableColor}} onClick={() => clickTable()}>
             <div>
                 {table.name}
             </div>

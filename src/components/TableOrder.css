@@ -1,0 +1,22 @@
+
+.table_order_item_wrapper {
+    border-bottom: 1px solid white;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.table_order_item_index {
+    font-size: 20px;
+    margin: 5px;
+}
+
+.table_order_item {
+    display: flex;
+    align-items: center;
+    padding: 0 5px;
+}
+
+.table_order_item_price {
+    margin-left: auto;
+}
