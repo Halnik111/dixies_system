@@ -1,12 +1,10 @@
 
 .orderListItem {
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
     align-items: center;
     padding: 8px 0px;
-    margin: 0 8px;
     border-bottom: 1px solid crimson;
+    overflow: hidden;
 }
 
 .orderItem_remove {
@@ -15,4 +13,18 @@
 
 .meal_wrapper {
     display: flex;
+}
+
+.meals_container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.orderListItem_custom_message {
+    text-align: start;
+    text-wrap: wrap;
+    border-top: 1px solid white;
+    padding-top: 3px;
+    margin-top: 4px;
 }

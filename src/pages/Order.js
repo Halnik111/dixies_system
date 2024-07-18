@@ -5,51 +5,27 @@ import {useLocation, useNavigate} from "react-router-dom";
 import OrderDetails from "../components/OrderDetails";
 import {AuthContext} from "../context/AuthContext";
 import {SocketContext} from "../context/SocketContext";
+import OrderKeyboard from "../components/OrderKeyboard";
 
 const Order = () => {
-    const [menu, setMenu] = useState([]);
     const [orders, setOrders] = useState([]);
     const [meals, setMeals] = useState([]);
+    const [customMessage, setCustomMessage] =useState('');
     const { currentUser } = useContext(AuthContext);
     const { socket } = useContext(SocketContext);
     const location = useLocation();
     const navigate = useNavigate();
-    let mealRef =useRef(0);
     let orderRef = useRef(0);
-    
     let priceRef = useRef(0);
-
-    useEffect(() => {
-        fetchMenu();
-    }, []);
-
-    const fetchMenu = async () => {
-        await apiReq.get('/meals/getMeals')
-            .then(res => {
-                setMenu(res.data)
-            })
-    };
-    
-    const handleClick = (meal) => {
-        setMeals([
-            ...meals, {meal, index: mealRef.current}
-        ]);
-        mealRef.current = mealRef.current + 1;
-        priceRef.current += parseFloat(meal.price);
-    }
-
-const menuKey = () => {
-        return menu.map(meal => <div key={meal._id} className={`menuKey ${meal.category}`} onClick={() => handleClick(meal)}>
-            {meal.name}
-        </div>)
-    };
 
     const displayCurrentMealTicket = () => {
         let index = 0;
         return (
             meals.map(meal => {
                 return (
-                    <div key={index++}>{meal.meal.name}</div>
+                    <div key={index++}>
+                        <div>{meal.meal.name}</div>
+                    </div>
                 )
             })
         )
@@ -57,11 +33,13 @@ const menuKey = () => {
 
     const onNext = () => {
         setOrders([
-            ...orders, {meals: meals, ref: orderRef.current, price: priceRef.current}
+            ...orders, {meals: meals, ref: orderRef.current, price: priceRef.current, message: customMessage}
         ]);
+        console.log(customMessage);
         orderRef.current = orderRef.current + 1;
         setMeals([]);
         priceRef.current = 0;
+        setCustomMessage('');
     }
 
     const onConfirm = async () => {
@@ -103,19 +81,13 @@ const menuKey = () => {
             <div className={'order_content'}>
                 <div className={"order_meals"}>
                     <div className={'order_current'}>
-                        {displayCurrentMealTicket()}
+                        <div className={'order_current_items'}>{displayCurrentMealTicket()}</div>
+                        <div className={"order_current_custom"}>{customMessage}</div>
                     </div>
                     <div className={'order_meals_divider'}></div>
                     <OrderDetails orders={orders} setOrders={setOrders} />
                 </div>
-                <div className={'order_keyboard'}>
-                    <div className={'order_keyboard_custom'}>
-
-                    </div>
-                    <div className={'order_keyboard_keys'}>
-                        {menuKey()}
-                    </div>
-                </div>
+                <OrderKeyboard meals={meals} setMeals={setMeals} priceRef={priceRef} customMessage={customMessage} setCustomMessage={setCustomMessage}/>
             </div>
 
         </div>

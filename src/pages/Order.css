@@ -11,7 +11,7 @@
     flex-direction: column;
     justify-content: space-between;
     padding: 5px 10px;
-    overflow-y: hidden;
+    overflow: hidden;
 }
 
 .order_header {
@@ -64,39 +64,30 @@
     background-color: indianred;
 }
 
-.order_keyboard {
-    height: 50%;
-}
-
 .order_current {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    border-bottom: 2px solid white;
+    border-top: 2px solid white;
+}
+
+.order_current_items {
+    min-height: 20px;
+    display: flex;
     gap: 10px;
-    display: flex;
     flex-wrap: wrap;
-    min-height: 25px;
-    border-bottom: 2px solid crimson;
-    border-top: 2px solid crimson;
+    border-bottom: 1px white;
+    padding: 3px 0;
 }
 
-.order_keyboard_keys {
-    margin: 10px;
-    gap: 4px;
+.order_current_custom {
+    min-height: 20px;
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    overflow-y: scroll;
-    max-height: 100%
-}
-
-.order_keyboard_custom {
-    height: 20px;
-    background-color: darkcyan;
-    margin: 0 30px;
-}
-
-.menuKey {
-    padding: 4px;
-    border: 1px solid white;
+    align-items: start;
+    width: 100%;
+    border-top: 1px dashed white;
+    padding: 3px 0;
 }
 
 .order_meals {
@@ -106,5 +97,5 @@
 
 .order_meals_divider {
     margin: 4px 8px;
-    border-bottom: 2px solid crimson;
+    border-bottom: 2px solid white;
 }

@@ -12,7 +12,10 @@ const OrderDetails = ({ orders, setOrders }) => {
                             <path d="M1 1L11 11" stroke="white" strokeWidth="2" strokeLinecap="round"/>
                         </svg>
                     </div>
-                    {displayMeal(mealOrder)}
+                    <div>
+                        <div className={'meals_container'}>{displayMeal(mealOrder)}</div>
+                        {mealOrder.message && <div className={'orderListItem_custom_message'}>{mealOrder.message}</div>}
+                    </div>
                 </div>
             )
 
@@ -23,6 +26,7 @@ const OrderDetails = ({ orders, setOrders }) => {
             return (
                 <div key={meal.index} className={'meal_wrapper'}>
                     <div>{meal.meal.name}</div>
+                    <div>{meal.message}</div>
                 </div>
             )
         })
