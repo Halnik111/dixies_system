@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/dixies_system/static/css/main.2936156b.css",
-    "main.js": "/dixies_system/static/js/main.a1b92be8.js",
+    "main.js": "/dixies_system/static/js/main.18366097.js",
     "index.html": "/dixies_system/index.html",
     "main.2936156b.css.map": "/dixies_system/static/css/main.2936156b.css.map",
-    "main.a1b92be8.js.map": "/dixies_system/static/js/main.a1b92be8.js.map"
+    "main.18366097.js.map": "/dixies_system/static/js/main.18366097.js.map"
   },
   "entrypoints": [
     "static/css/main.2936156b.css",
-    "static/js/main.a1b92be8.js"
+    "static/js/main.18366097.js"
   ]
 }
