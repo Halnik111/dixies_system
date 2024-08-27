@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/static/css/main.2936156b.css",
-    "main.js": "/static/js/main.a1b92be8.js",
-    "index.html": "/index.html",
-    "main.2936156b.css.map": "/static/css/main.2936156b.css.map",
-    "main.a1b92be8.js.map": "/static/js/main.a1b92be8.js.map"
+    "main.css": "/dixies_system/static/css/main.2936156b.css",
+    "main.js": "/dixies_system/static/js/main.a1b92be8.js",
+    "index.html": "/dixies_system/index.html",
+    "main.2936156b.css.map": "/dixies_system/static/css/main.2936156b.css.map",
+    "main.a1b92be8.js.map": "/dixies_system/static/js/main.a1b92be8.js.map"
   },
   "entrypoints": [
     "static/css/main.2936156b.css",
