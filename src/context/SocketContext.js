@@ -7,8 +7,8 @@ export const SocketContextProvider = ({children}) => {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        // setSocket(io('wss://dixiessystembackend-production.up.railway.app/8080'));
-        setSocket(io('ws://localhost:8090'));
+        setSocket(io('wss://dixiessystembackend-production.up.railway.app/8080'));
+        // setSocket(io('ws://localhost:8080'));
     },[]);
 
     return (
