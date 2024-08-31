@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const apiReq = axios.create({
-    baseURL: process.env.REQ_URL,
+    baseURL: "https://dixiessystembackend-production.up.railway.app/",
+    // baseURL: "http://localhost:8080",
     withCredentials: true,
 });
 
