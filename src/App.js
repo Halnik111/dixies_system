@@ -5,6 +5,7 @@ import Tables from "./pages/Tables";
 import Login from "./pages/Login";
 import Navbar from "./components/Navbar";
 import Order from "./pages/Order";
+import Print from "./pages/Print";
 
 const App = () => {
 
@@ -20,6 +21,7 @@ const App = () => {
                             <Route path={'tables'} element={<Tables />}/>
                             <Route path={'login'} element={<Login />}/>
                             <Route path={'order'} element={<Order />}/>
+                            <Route path={'print'} element={<Print />}/>
                         </Route>
                     </Routes>
                 </div>

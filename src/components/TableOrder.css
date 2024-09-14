@@ -20,3 +20,8 @@
 .table_order_item_price {
     margin-left: auto;
 }
+
+.tables_order_item_meals {
+    display: flex;
+    flex-wrap: wrap;
+}

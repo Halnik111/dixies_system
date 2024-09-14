@@ -1,0 +1,67 @@
+
+.print {
+    display: flex;
+    color: white;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 5px;
+}
+
+.print_button {
+    color: black;
+    width: fit-content;
+    border-radius: 5px;
+    font-size: 18px;
+    padding: 5px 15px;
+    background-color: indianred;
+}
+
+.print_header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.print_header_company {
+    font-size: 22px;
+}
+
+.print_header_details {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.print_content {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    margin-top: 5px;
+    border-top: 1px solid white;
+}
+
+.print_order {
+    width: 100%;
+}
+
+.print_order_wrapper {
+    display: flex;
+    justify-content: space-between;
+}
+
+@media print {
+    body {
+        visibility: hidden;
+    }
+
+    #print_section {
+        color: black;
+        visibility: visible;
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+}

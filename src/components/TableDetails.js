@@ -49,7 +49,7 @@ const TableDetails = ({ tables, table, setActiveTable, user}) => {
                             className={"button order_button"}>Close
                     </button>
                     <button disabled={table.status !== 'taken' || !user.isAdmin}
-                            className={"button order_button"}>Print
+                            className={"button order_button"} onClick={() => navigate('/print', {state: {order: order}})}>Print
                     </button>
                 </div>
             </div>

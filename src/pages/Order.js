@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext, useRef, useState} from 'react';
 import './Order.css';
 import apiReq from "../apiReq";
 import {useLocation, useNavigate} from "react-router-dom";
@@ -45,13 +45,14 @@ const Order = () => {
     const onConfirm = async () => {
         const table = location.state.table;
         let totalPrice = 0;
-        orders.forEach(a => totalPrice += a.price);
-        
+        await orders.forEach(a => totalPrice += a.price);
+        const totalPriceRound = totalPrice.toFixed(2);
         const model = {
-            orders, currentUser, table, totalPrice
+            orders, currentUser, table, totalPriceRound
         };
          await apiReq.post('/order/newOrder', model)
              .then(async res => {
+                 console.log(model);
                  await apiReq.post('/tables/openTable', {table: table, orderId: res.data._id})
              })
              .then(() => {

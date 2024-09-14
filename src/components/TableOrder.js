@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useRef} from 'react';
 import './TableOrder.css';
 
 const OrderListItem = ({order}) => {
@@ -7,7 +7,7 @@ const OrderListItem = ({order}) => {
         return (
             <div key={ref.current++} className={'table_order_item_wrapper'}>
                 <div className={"table_order_item_index"}>{tableOrder.ref}</div>
-                {displayMeals(tableOrder.meals)}
+                <div className={'tables_order_item_meals'}>{displayMeals(tableOrder.meals)}</div>
                 <div className={'table_order_item_price'}>{tableOrder.price}€</div>
             </div>
         )
@@ -16,12 +16,22 @@ const OrderListItem = ({order}) => {
     const displayMeals = (meals) => {
         return (meals.map(meal => {
             return (
-                <div key={meal.index} className={'table_order_item'}>
+                <div key={meal.index} className={'table_order_item'} style={{order: orderItem(meal)}}>
                     <div>{meal.meal.name}</div>
                 </div>
             )
             })
         )
+    }
+
+    const orderItem = (item) => {
+        if (item.meal.category === 'burger' || item.meal.category === 'special' || item.meal.category === 'dessert')
+            return 1;
+        else if (item.meal.category === 'sides')
+            return 2;
+        else if (item.meal.category === 'dip')
+            return 3;
+        else return 4;
     }
 
     return (
