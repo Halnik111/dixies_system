@@ -6,11 +6,6 @@ const Print = () => {
     const location = useLocation();
     const [order, setOrder] = useState(location.state.order);
 
-
-    const test = () => {
-        console.log(location.state.order);
-    }
-
     const fixTo2 = (num) => {
         return parseFloat(num).toFixed(2)
     }
@@ -59,9 +54,17 @@ const Print = () => {
         else return 4;
     }
 
+    const dateFormatter = (date) => {
+        const test = new Date(date)
+        console.log(test.toUTCString())
+        return (
+            <div>asd</div>
+        )
+    }
+
     return (
         <div className={'print'}>
-            <div className={'print_button'} onClick={() => test()}>
+            <div className={'print_button'} onClick={() => window.print()}>
                 Print!
             </div>
             <div id={'print_section'} className={'print_content'}>
@@ -72,7 +75,7 @@ const Print = () => {
                         <div className={'print_header_table'}>Table: {order.tableId}</div>
                     </div>
                     <div className={'print_header_time'}>
-                        Created: {order.createdAt}
+                        Created: {new Date(order.createdAt).toUTCString()}
                     </div>
                 </div>
                 <div className={'print_order'}>
@@ -83,6 +86,11 @@ const Print = () => {
                 <div className={'print_order_summary'}>
                     <div>Order Total:</div>
                     <div>{order.price} Eur</div>
+                </div>
+                <div className={'print_order_footer'}>
+                    <div>{order.createdAt}</div>
+                    <div>{order._id}</div>
+                    <div>{new Date().toISOString()}</div>
                 </div>
             </div>
         </div>
