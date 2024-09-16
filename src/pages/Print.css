@@ -21,11 +21,11 @@
     display: flex;
     align-items: center;
     flex-direction: column;
-    margin-bottom: 20px;
+    margin: 20px 0
 }
 
 .print_header_company {
-    font-size: 22px;
+    font-size: 24px;
 }
 
 .print_header_details {
@@ -40,16 +40,82 @@
     flex-direction: column;
     align-items: start;
     margin-top: 5px;
-    border-top: 1px solid white;
+    box-sizing: border-box;
+    border: 1px solid white;
+    font-size: 18px;
 }
 
 .print_order {
     width: 100%;
 }
 
+.test_print {
+    border: 1px solid white;
+}
+
 .print_order_wrapper {
     display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+.print_order_item_details {
+    display: flex;
+    align-items: center;
+    padding: 2px 5px;
+}
+
+.print_order_meal_details {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.print_order_item {
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    align-items: center;
     justify-content: space-between;
+}
+
+.print_order_item_meals {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    border-bottom: 1px dashed;
+    padding-bottom: 5px;
+}
+
+.print_order_item_meals_message {
+    border-top: 1px dashed;
+    margin-top: 5px;
+    font-size: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    order: 10;
+}
+
+.print_order_outer_wrapper {
+    padding: 10px 0;
+}
+
+.print_order_item_total {
+    padding: 10px 5px 10px 10px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid;
+}
+
+.print_order_summary {
+    width: 100%;
+    font-size: 20px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.border_color {
+    border-color: white;
 }
 
 @media print {
@@ -63,5 +129,9 @@
         position: absolute;
         left: 0;
         top: 0;
+    }
+
+    .border_color {
+        border-color: black;
     }
 }

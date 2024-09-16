@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import './OrderDetails.css';
 
 const OrderDetails = ({ orders, setOrders }) => {
@@ -18,7 +18,6 @@ const OrderDetails = ({ orders, setOrders }) => {
                     </div>
                 </div>
             )
-
     };
 
     const displayMeal = (mealOrder) => {
