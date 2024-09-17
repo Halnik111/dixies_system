@@ -9,8 +9,13 @@ const OrderListItem = ({order}) => {
         return (
             <div key={ref.current++} className={'table_order_item_wrapper'}>
                 <div className={"table_order_item_index"}>{tableOrder.ref}</div>
-                <div className={'tables_order_item_meals'}>{displayMeals(tableOrder.meals)}</div>
-                <div className={'table_order_item_price'}>{tableOrder.price}€</div>
+                <div className={'table_order_item_content'}>
+                    <div className={'table_order_item_details'}>
+                        <div className={'tables_order_item_meals'}>{displayMeals(tableOrder.meals)}</div>
+                        <div className={'table_order_item_price'}>{tableOrder.price}€</div>
+                    </div>
+                    {tableOrder.message && <div className={'table_order_item_message'}>{tableOrder.message}</div>}
+                </div>
             </div>
         )
     };

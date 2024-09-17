@@ -11,6 +11,14 @@
     margin: 5px;
 }
 
+.table_order_item_content {
+    width: 100%;
+}
+
+.table_order_item_details {
+    display: flex;
+}
+
 .table_order_item {
     display: flex;
     align-items: center;
@@ -22,6 +30,15 @@
 }
 
 .tables_order_item_meals {
+    padding: 3px 0;
     display: flex;
     flex-wrap: wrap;
+}
+
+.table_order_item_message {
+    padding: 3px 0;
+    display: flex;
+    word-break: break-word;
+    width: 100%;
+    border-top: 1px dashed white;
 }
