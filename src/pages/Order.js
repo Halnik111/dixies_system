@@ -86,7 +86,9 @@ const Order = () => {
                         <div className={"order_current_custom"}>{customMessage}</div>
                     </div>
                     <div className={'order_meals_divider'}></div>
-                    <OrderDetails orders={orders} setOrders={setOrders} />
+                    <div className={'order_meals_list'}>
+                        <OrderDetails orders={orders} setOrders={setOrders} />
+                    </div>
                 </div>
                 <OrderKeyboard meals={meals} setMeals={setMeals} priceRef={priceRef} customMessage={customMessage} setCustomMessage={setCustomMessage}/>
             </div>

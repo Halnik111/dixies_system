@@ -1,6 +1,6 @@
 ﻿
 .order_keyboard {
-    height: 50%;
+    max-height: 315px;
 }
 
 input:focus {
@@ -8,15 +8,13 @@ input:focus {
 }
 
 .order_keyboard_keys {
-    margin: 10px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     overflow-y: scroll;
     box-sizing: border-box;
-    max-height: 100%;
-    padding-bottom: 40px;
+    max-height: 225px;
 }
 
 .order_keyboard_custom_wrapper {

@@ -3,7 +3,7 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: calc(100vh - 35px);
     color: white;
 }
 
@@ -96,12 +96,19 @@
     display: flex;
     box-sizing: border-box;
     max-height: 100%;
+    overflow-y: hidden;
     flex-direction: column;
-    overflow-y: scroll;
-    margin-bottom: 10px;
+    padding-bottom: 10px;
 }
 
 .order_meals_divider {
     margin: 4px 8px;
     border-bottom: 2px solid white;
+}
+
+.order_meals_list {
+    display: flex;
+    overflow-y: scroll;
+    max-height: 100%;
+    flex-direction: column;
 }
