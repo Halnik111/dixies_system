@@ -3,10 +3,12 @@ import './Home.css';
 import {AuthContext} from "../context/AuthContext";
 import NoAccess from "../components/NoAccess";
 import {SocketContext} from "../context/SocketContext";
+import {useNavigate} from "react-router-dom";
 
 const Home = () => {
     const {currentUser} = useContext(AuthContext);
     const { socket } = useContext(SocketContext);
+    const navigate = useNavigate();
 
     useEffect( () => {
         socket?.on('testEmit', data => {
@@ -15,18 +17,13 @@ const Home = () => {
 
     }, [socket]);
 
-    const test = () => {
-        console.log('clicked')
-        socket.emit('test', "test success?");
-    }
-
     return (
         <div className={'home'}>
             {currentUser ? (
-                <div>
+                <div className={'home_header'}>
                     Ordering System
-                    <div onClick={() => test()}>
-                        button
+                    <div className={'button'} onClick={() => navigate('/tables')}>
+                        Tables
                     </div>
                 </div>
             ) : (

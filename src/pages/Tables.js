@@ -6,12 +6,14 @@ import apiReq from "../apiReq";
 import Table from "../components/Table";
 import {SocketContext} from "../context/SocketContext";
 import TableDetails from "../components/TableDetails";
+import {useNavigate} from "react-router-dom";
 
 const Tables = () => {
     const { currentUser } = useContext(AuthContext);
     const { socket } = useContext(SocketContext);
     const [tables, setTables] = useState([]);
     const [activeTable, setActiveTable] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchTables();
@@ -31,6 +33,7 @@ const Tables = () => {
     const fetchTables = () => {
         apiReq.get("/tables/getTables")
             .then(res => setTables(res.data))
+            .catch(err => navigate('/'))
     }
 
     return (

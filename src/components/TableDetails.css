@@ -3,6 +3,7 @@
     display: flex;
     flex-direction: column;
     width: 100%;
+    overflow: hidden;
 }
 
 .table_details_header {
@@ -45,6 +46,7 @@
     flex-direction: column;
     margin: 10px 20px;
     border-top: 1px solid white;
+    overflow-y: scroll;
 }
 
 .table_order_items {
