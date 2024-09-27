@@ -5,7 +5,7 @@ import {SocketContext} from "../context/SocketContext";
 import {useNavigate} from "react-router-dom";
 import TableOrder from "./TableOrder";
 
-const TableDetails = ({ tables, table, setActiveTable, user}) => {
+const TableDetails = ({ table, setActiveTable, user }) => {
     const [order, setOrder] = useState();
     const { socket } = useContext(SocketContext);
     const navigate = useNavigate();
@@ -44,7 +44,7 @@ const TableDetails = ({ tables, table, setActiveTable, user}) => {
                     <button disabled={table.status === 'taken'} className={"button order_button"}
                             onClick={() => navigate('/order', {state: {table: table.name}})}>New
                     </button>
-                    <button disabled={table.status !== 'taken'} className={"button order_button"}>Edit</button>
+                    <button onClick={() => navigate('/order', {state: {table: table.name, order: order}})} disabled={table.status !== 'taken'} className={"button order_button"}>Edit</button>
                     <button onClick={closeTable} disabled={table.status !== 'taken' || !user.isAdmin}
                             className={"button order_button"}>Close
                     </button>

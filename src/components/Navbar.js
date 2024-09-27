@@ -1,9 +1,27 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import "./Navbar.css";
 import {AuthContext} from "../context/AuthContext";
+import apiReq from "../apiReq";
 
 const Navbar = () => {
     const { currentUser } = useContext(AuthContext);
+    const { updateUser } = useContext(AuthContext);
+
+    useEffect(() => {
+        checkUser();
+    }, []);
+
+    const checkUser = async () => {
+        await apiReq.post("auth/ping", {})
+            .then(res => {
+                if (res.data === 'not found') {
+                    updateUser(null);
+                }
+            })
+            .catch(() => {
+                console.log("failed")
+            });
+    }
 
     return (
         <div className={'navbar'}>

@@ -22,7 +22,6 @@ const Login = () => {
         await apiReq.post("auth/signIn", {name, password}, )
             .then(res => {
                 updateUser(res.data);
-                console.log(res.data);
             })
             .then(() => {
                 navigate('/');

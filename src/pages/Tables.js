@@ -33,7 +33,7 @@ const Tables = () => {
     const fetchTables = () => {
         apiReq.get("/tables/getTables")
             .then(res => setTables(res.data))
-            .catch(err => navigate('/'))
+            .catch(() => navigate('/'))
     }
 
     return (
@@ -46,7 +46,7 @@ const Tables = () => {
                             {tables.map(table => <Table key={table._id} table={table} setActiveTable={setActiveTable}/>)}
                         </div>
                     </div>
-                    <TableDetails tables={tables} table={activeTable} setActiveTable={setActiveTable} user={currentUser}/>
+                    <TableDetails table={activeTable} setActiveTable={setActiveTable} user={currentUser}/>
                 </div>
             ) : (
                 <NoAccess />

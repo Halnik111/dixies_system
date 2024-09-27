@@ -1,4 +1,4 @@
-import React, {useContext, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import './Order.css';
 import apiReq from "../apiReq";
 import {useLocation, useNavigate} from "react-router-dom";
@@ -17,6 +17,13 @@ const Order = () => {
     const navigate = useNavigate();
     let orderRef = useRef(0);
     let priceRef = useRef(0);
+
+    useEffect(() => {
+        if (location.state.order) {
+            setOrders(location.state.order.meals);
+            orderRef.current += location.state.order.meals.length;
+        }
+    }, [location.state.order, location.state.table])
 
     const displayCurrentMealTicket = () => {
         let index = 0;
