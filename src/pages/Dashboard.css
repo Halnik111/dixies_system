@@ -1,0 +1,40 @@
+
+.dashboard {
+
+}
+
+.dashboard_wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.dashboard_nav {
+    position: sticky;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 0;
+    background-color: gray;
+}
+
+.dashboard_nav_wrapper {
+    font-size: 22px;
+    color: white;
+    display: flex;
+    gap: 10px;
+}
+
+.dashboard_overview {
+    height: 500px;
+    background-color: darkolivegreen;
+}
+
+.dashboard_graph {
+    height: 500px;
+    background-color: coral;
+}
+
+.dashboard_nav_new {
+
+}

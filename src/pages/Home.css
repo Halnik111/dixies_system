@@ -1,11 +1,30 @@
 
 .home {
     font-size: 25px;
-    height: 100%;
 }
 
-.test1 {
-    font-size: 15px;
+.home_header {
+    color: white;
+}
+
+.home_header_title {
+    margin: 20px 0;
+    border-bottom: 1px solid cadetblue;
+}
+
+.home_header_nav {
     display: flex;
     flex-direction: column;
+    margin-left: 10%;
+    padding-left: 10px;
+    border-left: 2px solid cadetblue;
+    gap: 10px;
+}
+
+.home_header_nav_button {
+    color: black;
+    max-width: 300px;
+    font-size: 18px;
+    background-color: cadetblue;
+    border-radius: 5px;
 }

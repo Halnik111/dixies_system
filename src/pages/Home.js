@@ -21,9 +21,17 @@ const Home = () => {
         <div className={'home'}>
             {currentUser ? (
                 <div className={'home_header'}>
-                    Ordering System
-                    <div className={'button'} onClick={() => navigate('/tables')}>
-                        Tables
+                    <div className={'home_header_title'}>Ordering System</div>
+                    <div className={'home_header_nav'}>
+                        <div className={'home_header_nav_button'} onClick={() => navigate('/tables')}>
+                            Tables
+                        </div>
+                        <div className={'home_header_nav_button'} onClick={() => navigate('/dashboard')}>
+                            *Dashboard
+                        </div>
+                        <div className={'home_header_nav_button'} onClick={() => navigate('/login')}>
+                            Login
+                        </div>
                     </div>
                 </div>
             ) : (

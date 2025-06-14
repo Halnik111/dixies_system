@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Navbar from "./components/Navbar";
 import Order from "./pages/Order";
 import Print from "./pages/Print";
+import Dashboard from "./pages/Dashboard";
 
 const App = () => {
 
@@ -22,6 +23,7 @@ const App = () => {
                             <Route path={'login'} element={<Login />}/>
                             <Route path={'order'} element={<Order />}/>
                             <Route path={'print'} element={<Print />}/>
+                            <Route path={'dashboard'} element={<Dashboard />}/>
                         </Route>
                     </Routes>
                 </div>
