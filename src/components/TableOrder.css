@@ -27,6 +27,8 @@
 
 .table_order_item_price {
     margin-left: auto;
+    display: flex;
+    align-items: center;
 }
 
 .tables_order_item_meals {

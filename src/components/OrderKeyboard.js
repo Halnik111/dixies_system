@@ -2,7 +2,7 @@
 import apiReq from "../apiReq";
 import './OrderKeyboard.css';
 
-const OrderKeyboard = ({ meals, setMeals, priceRef, customMessage, setCustomMessage }) => {
+const OrderKeyboard = ({ orders, setOrders, activeOrder }) => {
     const [menu, setMenu] = useState([]);
     let mealRef =useRef(0);
     const [switchControl, setSwitchControl] = useState('meals');
@@ -11,7 +11,7 @@ const OrderKeyboard = ({ meals, setMeals, priceRef, customMessage, setCustomMess
 
     useEffect(() => {
         fetchMenu();
-    }, [customMessage]);
+    }, []);
 
     const fetchMenu = async () => {
         await apiReq.get('/meals/getMeals')
@@ -21,17 +21,22 @@ const OrderKeyboard = ({ meals, setMeals, priceRef, customMessage, setCustomMess
     };
 
     const handleClick = (meal) => {
-        setMeals([
-            ...meals, {meal, index: mealRef.current}
-        ]);
+        const index = orders.findIndex(item => item.ref === activeOrder);
+        const arr = [...orders];
+        arr[index].meals.push({meal, index: mealRef.current});
+        arr[index].price += parseFloat(meal.price);
+        setOrders(arr);
+        console.log(orders)
         mealRef.current = mealRef.current + 1;
-        priceRef.current += parseFloat(meal.price);
     }
     
     const confirmCustom = async (e) => {
         e.preventDefault();
-        setCustomMessage(message);
-        setMessage('')
+        const index = orders.findIndex(item => item.ref === activeOrder);
+        const arr = [...orders];
+        arr[index].message = message;
+        setOrders(arr);
+        setMessage('');
     }
 
     const menuKeyboard = () => {
