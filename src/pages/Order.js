@@ -20,6 +20,7 @@ const Order = () => {
     useEffect(() => {
         if (location.state.order) {
             setOrders(location.state.order.meals);
+            orderRef.current = location.state.order.meals.length - 1;
         }
     }, [])
     const onNext = () => {
@@ -75,14 +76,13 @@ const Order = () => {
                     <div className={'order_item_wrapper'}>
                         <div className={'order_item_meals'}>{mealOrder.meals.map(item => displayMeal(item, mealOrder))}</div>
                         <div className={'oder_item_divider'}></div>
-                        <div className={'order_item_message'}>{mealOrder.message}</div>
+                        <div className={'order_item_message'}>{mealOrder.ref} || {mealOrder.message}</div>
                     </div>
                 </div>
             )
     }
 
     const displayMeal = (item, mealOrder) => {
-        console.log(item);
         return (
             <div key={item.index} onClick={() => {
                 if (activeOrder === mealOrder.ref) removeMeal(item)}
