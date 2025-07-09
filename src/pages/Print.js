@@ -10,6 +10,115 @@ const Print = () => {
         return parseFloat(num).toFixed(2)
     }
 
+    const serviceUUID = 'e7810a71-73ae-499d-8c15-faa9aef0c3f2'; // Use your printer's actual service UUID
+    const characteristicUUID = 'bef8d6c9-9c21-4c9e-b632-bd58c1009f9f'; // Replace with actual write characteristic UUID
+
+    const generateReceipt = (order) => {
+        const lineWidth = 32; // Most printers = 32 or 48 chars per line
+        let receipt = "";
+        
+        console.log(order)
+
+        // Helper for padding text
+        const pad = (text, width, align = "left") => {
+            if (align === "right") return text.toString().padStart(width);
+            if (align === "center") {
+                const space = width - text.length;
+                const padLeft = Math.floor(space / 2);
+                const padRight = space - padLeft;
+                return " ".repeat(padLeft) + text + " ".repeat(padRight);
+            }
+            return text.toString().padEnd(width);
+        };
+
+        let subtotal = 0;
+        const tax = subtotal * order.taxRate;
+        const total = subtotal + tax;
+
+        // ESC/POS Commands
+        receipt += "\x1B\x40"; // Initialize
+        receipt += "\x1B\x21\x30"; // Bold + double size
+        receipt += "\n\n\n";
+        receipt += "Dixie's Burger\n";
+        receipt += "\x1B\x21\x00"; // Normal
+        receipt += "-".repeat(lineWidth) + "\n";
+        receipt += "\x1B\x21\x30";
+        receipt += `${order.tableId} ${order.openedBy.name}\n\n`;
+        receipt += "\x1B\x21\x20";
+        receipt += `${new Date(order.createdAt).toUTCString()}\n`;
+        receipt += "\x1B\x21\x00"; // Normal
+        receipt += "\n\n";
+        receipt += pad("Qty", 4) + pad("Item", 18) + pad("Total", 10, "right") + "\n";
+        receipt += "-".repeat(lineWidth) + "\n";
+        receipt += "-".repeat(lineWidth) + "\n";
+        
+        order.meals.map(meal => {
+            //receipt += `${meal.ref}`; // Meal reference
+            meal.meals.map(item => {
+                receipt += pad(`${item.meal.name}`, 23, "left");
+                receipt += pad(`${fixTo2(item.meal.price)}Eur\n`, 9, "right");
+            })
+            receipt += `(${meal.message})\n`;
+            receipt += "- ".repeat(lineWidth / 2) + "\n";
+            receipt += "\x1B\x45\x01"; // Bold
+            receipt += pad(`Total`, 12, "left");
+            receipt += pad(`${fixTo2(meal.price)}Eur\n`, 20, "right");
+            receipt += "\x1B\x21\x00"; // Normal
+            receipt += "-".repeat(lineWidth) + "\n\n";
+        })
+        
+        receipt += "\x1B\x21\x20"; // Double size
+        receipt += pad("Total:", 6) + pad(`Eur ${fixTo2(order.price)}`, 10, "right") + "\n";
+        receipt += "\x1B\x21\x00"; // Normal
+        receipt += "-".repeat(lineWidth) + "\n";
+        receipt += pad(`${order.createdAt}`, lineWidth, "center") + "\n";
+        receipt += pad(`${order._id}`, lineWidth, "center") + "\n";
+        receipt += pad(`${new Date().toISOString()}`, lineWidth, "center") + "\n";
+        receipt += "\n\n\n";
+
+        return receipt;
+    }
+
+    async function writeChunked(characteristic, data, chunkSize = 180) {
+        let offset = 0;
+        while (offset < data.length) {
+            const chunk = data.slice(offset, offset + chunkSize);
+            await characteristic.writeValue(chunk);
+            offset += chunkSize;
+            // Optional: add small delay if printer is slow
+            await new Promise(res => setTimeout(res, 50));
+        }
+    }
+
+    const connectToPrinter = async () => {
+        const statusEl = document.getElementById("status");
+        try {
+            statusEl.textContent = "Requesting device...";
+            const device = await navigator.bluetooth.requestDevice({
+                filters: [{namePrefix: 'PTP'}], // Adjust based on your device name
+                optionalServices: [serviceUUID]
+            });
+
+            statusEl.textContent = "Connecting to GATT server...";
+            const server = await device.gatt.connect();
+
+            const service = await server.getPrimaryService(serviceUUID);
+            const characteristic = await service.getCharacteristic(characteristicUUID);
+
+            statusEl.textContent = "Connected. Sending print command...";
+
+            const receiptText = generateReceipt(order);
+            const data = new TextEncoder().encode(receiptText);
+            await writeChunked(characteristic, data); // Use chunked sending
+
+
+            statusEl.textContent = "Printed successfully!";
+        } catch (err) {
+            console.error(err);
+            statusEl.textContent = "Error: " + err.message;
+        }
+    }
+
     const displayOrder = (tableOrder) => {
         return (
             <div key={tableOrder.ref} className={'print_order_outer_wrapper'}>
@@ -56,9 +165,10 @@ const Print = () => {
 
     return (
         <div className={'print'}>
-            <div className={'print_button'} onClick={() => window.print()}>
+            <div className={'print_button'} onClick={() => connectToPrinter()}>
                 Print!
             </div>
+            <div id={'status'}></div>
             <div id={'print_section'} className={'print_content'}>
                 <div className={'print_header'}>
                     <div className={'print_header_logo'}>
