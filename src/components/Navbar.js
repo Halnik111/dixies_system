@@ -2,10 +2,12 @@ import React, {useContext, useEffect} from 'react';
 import "./Navbar.css";
 import {AuthContext} from "../context/AuthContext";
 import apiReq from "../apiReq";
+import {useNavigate} from "react-router-dom";
 
 const Navbar = () => {
     const { currentUser } = useContext(AuthContext);
     const { updateUser } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     useEffect(() => {
         checkUser();
@@ -27,7 +29,7 @@ const Navbar = () => {
         <div className={'navbar'}>
             {currentUser ? (
                 <div className={'navbar_wrapper'}>
-                    <div className={'navbar_status'}>
+                    <div className={'navbar_status'} onClick={() => navigate('/')}>
                         {currentUser.isAdmin ? (
                             <div>*Admin</div>
                         ) : (

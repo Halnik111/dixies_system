@@ -48,7 +48,6 @@ const Print = () => {
         receipt += `${new Date(order.createdAt).toUTCString()}\n`;
         receipt += "\x1B\x21\x00"; // Normal
         receipt += "\n\n";
-        receipt += pad("Qty", 4) + pad("Item", 18) + pad("Total", 10, "right") + "\n";
         receipt += "-".repeat(lineWidth) + "\n";
         receipt += "-".repeat(lineWidth) + "\n";
         

@@ -29,13 +29,16 @@ const Home = () => {
                         <div className={'home_header_nav_button'} onClick={() => navigate('/dashboard')}>
                             *Dashboard
                         </div>
+                        <div className={'home_header_nav_button'} onClick={() => navigate('/settings')}>
+                            Settings
+                        </div>
                         <div className={'home_header_nav_button'} onClick={() => navigate('/login')}>
                             Login
                         </div>
                     </div>
                 </div>
             ) : (
-                <NoAccess />
+                <NoAccess/>
             )}
 
         </div>

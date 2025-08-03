@@ -7,10 +7,13 @@ const OrderKeyboard = ({ orders, setOrders, activeOrder }) => {
     let mealRef =useRef(0);
     const [switchControl, setSwitchControl] = useState('meals');
     const [message, setMessage] = useState('');
-    
+    const index = orders.findIndex(item => item.ref === activeOrder);
+    const arr = [...orders];
 
     useEffect(() => {
         fetchMenu();
+        
+        console.log(mealRef.current)
     }, []);
 
     const fetchMenu = async () => {
@@ -21,13 +24,17 @@ const OrderKeyboard = ({ orders, setOrders, activeOrder }) => {
     };
 
     const handleClick = (meal) => {
-        const index = orders.findIndex(item => item.ref === activeOrder);
-        const arr = [...orders];
-        arr[index].meals.push({meal, index: mealRef.current});
+        mealRef.current = arr[index].meals[arr[index].meals.length - 1]?.index + 1 || 0; // Increment index for new meal
+        console.log(mealRef.current)
+        arr[index].meals.push({meal, index: mealRef.current });
         arr[index].price += parseFloat(meal.price);
+        if (arr[index].meals.some(a => a.meal.category === 'burger') && arr[index].meals.some(a => a.meal.category === 'sides') && arr[index].meals.some(a => a.meal.category === 'dip')) {
+            arr[index].price -= 1; // Apply discount for burger + side combo
+            console.log('Discount applied for burger + side combo');
+        }
         setOrders(arr);
         console.log(orders)
-        mealRef.current = mealRef.current + 1;
+        //mealRef.current = mealRef.current + 1;
     }
     
     const confirmCustom = async (e) => {

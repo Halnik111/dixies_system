@@ -16,17 +16,32 @@
 .tables_window {
     box-sizing: border-box;
     display: flex;
-    margin: 20px auto;
+    margin: 5px auto;
     min-width: 95%;
     border-radius: 5px;
-    padding: 5px;
+    padding: 4px;
     border: azure 2px solid;
     flex-direction: column;
 }
 
 .tables_grid {
     display: grid;
-    grid-template-columns: repeat(5, auto);
+    grid-template-columns: auto auto auto auto auto 2px auto;
+    grid-template-rows: auto auto auto auto auto 2px auto;
     grid-column-gap: 5px;
     grid-row-gap: 10px;
+}
+
+#table_divider_vertical {
+    grid-column: 6;
+    grid-row: 1 / 6;
+    width: 2px;
+    background-color: white;
+}
+
+#table_divider_horizontal {
+    grid-column: 1 / -1;
+    grid-row: 6;
+    height: 2px;
+    background-color: white;
 }

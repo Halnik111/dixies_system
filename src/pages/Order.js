@@ -21,6 +21,7 @@ const Order = () => {
         if (location.state.order) {
             setOrders(location.state.order.meals);
             orderRef.current = location.state.order.meals.length - 1;
+            console.log('Order loaded from state:', location.state.order.meals);
         }
     }, [])
     const onNext = () => {
@@ -93,6 +94,10 @@ const Order = () => {
     const removeMeal = (meal) => {
         const index = orders.findIndex(item => item.ref === activeOrder);
         const arr = [...orders];
+        if (arr[index].meals.some(a => a.meal.category === 'burger') && arr[index].meals.some(a => a.meal.category === 'sides') && arr[index].meals.some(a => a.meal.category === 'dip')) {
+            arr[index].price += 1; // Remove discount for burger + side combo
+            console.log('Discount removed for burger + side combo');
+        }
         arr[index].price -= parseFloat(meal.meal.price);
         arr[index].meals = arr[index].meals.filter(a => a.index !== meal.index);
         setOrders(arr);
