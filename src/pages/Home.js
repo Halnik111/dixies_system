@@ -1,12 +1,12 @@
 import React, {useContext, useEffect} from 'react';
 import './Home.css';
-import {AuthContext} from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import NoAccess from "../components/NoAccess";
 import {SocketContext} from "../context/SocketContext";
 import {useNavigate} from "react-router-dom";
 
 const Home = () => {
-    const {currentUser} = useContext(AuthContext);
+    const { user } = useAuth();
     const { socket } = useContext(SocketContext);
     const navigate = useNavigate();
 
@@ -19,7 +19,7 @@ const Home = () => {
 
     return (
         <div className={'home'}>
-            {currentUser ? (
+            {user ? (
                 <div className={'home_header'}>
                     <div className={'home_header_title'}>Ordering System</div>
                     <div className={'home_header_nav'}>

@@ -1,49 +1,45 @@
 import './Login.css';
 
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {useNavigate} from "react-router-dom";
-import apiReq from "../apiReq";
-import {AuthContext} from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
     const navigate = useNavigate();
     const [error, setError] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const { updateUser } = useContext(AuthContext);
-
-
+    const [loading, setLoading] = useState(false);
+    const { login, logout } = useAuth();
+    
+    
     const signIn = async (e) => {
         e.preventDefault();
-        setIsLoading(true);
+        setError("");
+        setLoading(true);
         const formData = new FormData(e.target);
         const name = formData.get("name");
         const password = formData.get("password");
 
-        await apiReq.post("auth/signIn", {name, password}, )
-            .then(res => {
-                updateUser(res.data);
-            })
-            .then(() => {
-                navigate('/');
-            })
-            .catch((err) => {
-                console.log("failed")
-                setError(err.response.data);
-            }).finally(() => {
-                setIsLoading(false);
-            })
+        try {
+            await login(name, password);
+            navigate("/"); // Redirect to home or dashboard
+        } catch (err) {
+            setError("Invalid name or password");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const signOut = async () => {
-        await apiReq.post("auth/signOut", {})
-            .then(res => {
-                updateUser(null);
-                setError(res.data)
-            })
-            .catch((err) => {
-                console.log("failed")
-                setError(err.response.data);
-            });
+        setError("");
+        setLoading(true);
+        
+        try {
+            await logout();
+        } catch (err) {
+            setError("Failed to sign out");
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -61,7 +57,7 @@ const Login = () => {
                     </div>
                     <input name={"password"} type={"password"} id={'field_password'} className={'input'}/>
                 </div>
-                <button disabled={isLoading} className={'form_button button'}>Login</button>
+                <button disabled={loading} className={'form_button button'}>Login</button>
             </form>
             <button className={'form_button button'} onClick={() => signOut()}>Sign out</button>
             {error && <span>{error}</span>}

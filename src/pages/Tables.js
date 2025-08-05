@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import './Tables.css';
-import {AuthContext} from "../context/AuthContext";
+import {useAuth} from "../context/AuthContext";
 import NoAccess from "../components/NoAccess";
 import apiReq from "../apiReq";
 import Table from "../components/Table";
@@ -9,7 +9,7 @@ import TableDetails from "../components/TableDetails";
 import {useNavigate} from "react-router-dom";
 
 const Tables = () => {
-    const { currentUser } = useContext(AuthContext);
+    const { user } = useAuth();
     const { socket } = useContext(SocketContext);
     const [tables, setTables] = useState([]);
     const [activeTable, setActiveTable] = useState(null);
@@ -38,7 +38,7 @@ const Tables = () => {
 
     return (
         <div className={'tables'}>
-            {currentUser ? (
+            {user ? (
                 <div className={'tables_wrapper'}>
                     <div>ORDER SYSTEM</div>
                     <div className={'tables_window'}>
@@ -48,7 +48,7 @@ const Tables = () => {
                             <div id={'table_divider_horizontal'}></div>
                         </div>
                     </div>
-                    <TableDetails table={activeTable} setActiveTable={setActiveTable} user={currentUser}/>
+                    <TableDetails table={activeTable} setActiveTable={setActiveTable} user={user}/>
                 </div>
             ) : (
                 <NoAccess />

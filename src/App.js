@@ -8,6 +8,7 @@ import Order from "./pages/Order";
 import Print from "./pages/Print";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
 
@@ -24,8 +25,16 @@ const App = () => {
                             <Route path={'login'} element={<Login />}/>
                             <Route path={'order'} element={<Order />}/>
                             <Route path={'print'} element={<Print />}/>
-                            <Route path={'dashboard'} element={<Dashboard />}/>
-                            <Route path={'settings'} element={<Settings />}/>
+                            <Route path={'dashboard'} element={
+                                <ProtectedRoute allowedRoles={"admin"}>
+                                <Dashboard />
+                                </ProtectedRoute>}
+                            />
+                            <Route path={'settings'} element={
+                                <ProtectedRoute allowedRoles={["admin"]}>
+                                <Settings />
+                                </ProtectedRoute>}
+                            />
                         </Route>
                     </Routes>
                 </div>

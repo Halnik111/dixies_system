@@ -2,15 +2,14 @@ import React, {useContext, useEffect, useRef, useState} from 'react';
 import './Order.css';
 import apiReq from "../apiReq";
 import {useLocation, useNavigate} from "react-router-dom";
-import OrderDetails from "../components/OrderDetails";
-import {AuthContext} from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import {SocketContext} from "../context/SocketContext";
 import OrderKeyboard from "../components/OrderKeyboard";
 
 const Order = () => {
     const location = useLocation();
     const [orders, setOrders] = useState([{ref: 0, price: 0, meals: [], message: ''}]);
-    const { currentUser } = useContext(AuthContext);
+    const { user } = useAuth();
     const { socket } = useContext(SocketContext);
     const navigate = useNavigate();
     let orderRef = useRef(0);
@@ -45,7 +44,7 @@ const Order = () => {
         // const totalPriceRound = totalPrice.toFixed(2);
         const totalPriceRound = Math.round(totalPrice * 100) / 100; // Round to 2 decimal places
         const model = {
-            orders, currentUser, table, totalPriceRound
+            orders, currentUser: user, table, totalPriceRound
         };
          await apiReq.post('/order/newOrder', model)
              .then(async res => {
