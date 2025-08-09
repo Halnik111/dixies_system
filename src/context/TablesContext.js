@@ -15,8 +15,8 @@ export const TablesProvider = ({children}) => {
         fetchTables();
         
         // Initialize socket connection
-        //setSocket(io('wss://dixiessystembackend-production.up.railway.app'));
-        setSocket(io(process.env.SOCKET_URL));
+        setSocket(io('wss://dixiessystembackend-production.up.railway.app'));
+        //setSocket(io("ws://localhost:8080"));
     },[]);
     
     useEffect(  () =>{
