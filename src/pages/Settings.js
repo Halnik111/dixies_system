@@ -10,7 +10,7 @@ const Settings = () => {
     
     return (
         <div className={'settings'}>
-            Settigs Page
+            Settings Page
         </div>
     );
 };

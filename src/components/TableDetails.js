@@ -1,28 +1,24 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import './TableDetails.css';
 import apiReq from "../apiReq";
-import {SocketContext} from "../context/SocketContext";
+import { useTables } from "../context/TablesContext";
 import {useNavigate} from "react-router-dom";
 import TableOrder from "./TableOrder";
 
-const TableDetails = ({ table, setActiveTable, user }) => {
+const TableDetails = ({ table, setActiveTable }) => {
     const [order, setOrder] = useState();
-    const { socket } = useContext(SocketContext);
+    const { orders } = useTables();
+    const { tables, socket } = useTables();
     const navigate = useNavigate();
 
     useEffect(() => {
         if (table?.status === 'taken') {
-            fetchTableOrder();
+            setOrder(orders.find(i => i._id === table.orderId));
         }
-        else setOrder(null)
-    }, [table]);
-
-    const fetchTableOrder = async () => {
-        await apiReq.get(`/order/getOrder/${table.orderId}`)
-            .then(res => {
-                setOrder(res.data);
-            });
-    };
+        else {
+            setOrder(null);
+        }
+    }, [tables]);
 
     const closeTable = async () => {
         await apiReq.post('/tables/closeTable', {table: table._id})
@@ -45,10 +41,10 @@ const TableDetails = ({ table, setActiveTable, user }) => {
                             onClick={() => navigate('/order', {state: {table: table.name}})}>New
                     </button>
                     <button onClick={() => navigate('/order', {state: {table: table.name, order: order}})} disabled={table.status !== 'taken'} className={"button order_button"}>Edit</button>
-                    <button onClick={closeTable} disabled={table.status !== 'taken' || !user.isAdmin}
+                    <button onClick={closeTable} disabled={table.status !== 'taken'}
                             className={"button order_button"}>Close
                     </button>
-                    <button disabled={table.status !== 'taken' || !user.isAdmin}
+                    <button disabled={table.status !== 'taken'}
                             className={"button order_button"} onClick={() => navigate('/print', {state: {order: order}})}>Print
                     </button>
                 </div>

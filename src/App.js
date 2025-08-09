@@ -9,6 +9,7 @@ import Print from "./pages/Print";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
 import ProtectedRoute from "./components/ProtectedRoute";
+import NoAccess from "./components/NoAccess";
 
 const App = () => {
 
@@ -20,18 +21,35 @@ const App = () => {
                 <div className={'wrapper'}>
                     <Routes>
                         <Route path={"/"}>
-                            <Route index element={<Home />}/>
-                            <Route path={'tables'} element={<Tables />}/>
                             <Route path={'login'} element={<Login />}/>
-                            <Route path={'order'} element={<Order />}/>
-                            <Route path={'print'} element={<Print />}/>
+                            <Route path={'noAccess'} element={<NoAccess />} />
+                            <Route index element={
+                                <ProtectedRoute allowedRoles={["Admin", "Manager" ,"User"]}>
+                                <Home />
+                                </ProtectedRoute>} 
+                            />
+                            <Route path={'tables'} element={
+                                <ProtectedRoute allowedRoles={["Admin", "Manager" ,"User"]}>
+                                    <Tables />
+                                </ProtectedRoute>}
+                            />
+                            <Route path={'order'} element={
+                                <ProtectedRoute allowedRoles={["Admin", "Manager" ,"User"]}>
+                                    <Order />
+                                </ProtectedRoute>}
+                            />
+                            <Route path={'print'} element={
+                                <ProtectedRoute allowedRoles={["Admin", "Manager" ,"User"]}>
+                                    <Print />
+                                </ProtectedRoute>}
+                            />
                             <Route path={'dashboard'} element={
-                                <ProtectedRoute allowedRoles={"admin"}>
+                                <ProtectedRoute allowedRoles={["Admin"]}>
                                 <Dashboard />
                                 </ProtectedRoute>}
                             />
                             <Route path={'settings'} element={
-                                <ProtectedRoute allowedRoles={["admin"]}>
+                                <ProtectedRoute allowedRoles={["Admin"]}>
                                 <Settings />
                                 </ProtectedRoute>}
                             />

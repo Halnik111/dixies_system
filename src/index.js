@@ -3,14 +3,14 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import {AuthProvider} from "./context/AuthContext";
-import {SocketContextProvider} from "./context/SocketContext";
+import {TablesProvider} from "./context/TablesContext";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <AuthProvider>
-        <SocketContextProvider>
+        <TablesProvider>
             <App />
-        </SocketContextProvider>
+        </TablesProvider>
     </AuthProvider>
 );
 
