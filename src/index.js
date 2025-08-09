@@ -2,16 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import {AuthContextProvider} from "./context/AuthContext";
-import {SocketContextProvider} from "./context/SocketContext";
+import {AuthProvider} from "./context/AuthContext";
+import {TablesProvider} from "./context/TablesContext";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <AuthContextProvider>
-        <SocketContextProvider>
+    <AuthProvider>
+        <TablesProvider>
             <App />
-        </SocketContextProvider>
-    </AuthContextProvider>
+        </TablesProvider>
+    </AuthProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

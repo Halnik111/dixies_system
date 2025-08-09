@@ -4,7 +4,7 @@ import {useNavigate} from "react-router-dom";
 
 const NoAccess = () => {
     const navigate = useNavigate();
-
+    
     return (
         <div className={"noAccess"}>
             <div>No Access</div>

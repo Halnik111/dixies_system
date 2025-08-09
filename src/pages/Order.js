@@ -1,17 +1,16 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import './Order.css';
 import apiReq from "../apiReq";
 import {useLocation, useNavigate} from "react-router-dom";
-import OrderDetails from "../components/OrderDetails";
-import {AuthContext} from "../context/AuthContext";
-import {SocketContext} from "../context/SocketContext";
+import { useAuth } from "../context/AuthContext";
 import OrderKeyboard from "../components/OrderKeyboard";
+import {useTables} from "../context/TablesContext";
 
 const Order = () => {
     const location = useLocation();
     const [orders, setOrders] = useState([{ref: 0, price: 0, meals: [], message: ''}]);
-    const { currentUser } = useContext(AuthContext);
-    const { socket } = useContext(SocketContext);
+    const { user } = useAuth();
+    const { socket } = useTables();
     const navigate = useNavigate();
     let orderRef = useRef(0);
     const [activeOrder, setActiveOrder] = useState(0);
@@ -20,7 +19,7 @@ const Order = () => {
     useEffect(() => {
         if (location.state.order) {
             setOrders(location.state.order.meals);
-            orderRef.current = location.state.order.meals.length - 1;
+            orderRef.current = location.state.order.meals[location.state.order.meals.length - 1].ref;
             console.log('Order loaded from state:', location.state.order.meals);
         }
     }, [])
@@ -45,7 +44,7 @@ const Order = () => {
         // const totalPriceRound = totalPrice.toFixed(2);
         const totalPriceRound = Math.round(totalPrice * 100) / 100; // Round to 2 decimal places
         const model = {
-            orders, currentUser, table, totalPriceRound
+            orders, currentUser: user, table, totalPriceRound
         };
          await apiReq.post('/order/newOrder', model)
              .then(async res => {
@@ -53,7 +52,7 @@ const Order = () => {
                  await apiReq.post('/tables/openTable', {table: table, orderId: res.data._id})
              })
              .then(() => {
-                 socket.emit('openTable', 'Opening table: ' + table);
+                 socket.emit('tableChange', 'Table changes: ' + table);
              })
              .finally(() => navigate('/tables'))
              .catch(err => console.log(err));
@@ -131,7 +130,6 @@ const Order = () => {
                 </div>
                 <OrderKeyboard orders={orders} setOrders={setOrders} activeOrder={activeOrder}/>
             </div>
-
         </div>
     );
 };

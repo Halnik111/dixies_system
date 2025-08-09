@@ -1,0 +1,63 @@
+
+.tables_loading {
+    top: -2px;
+    right: 12px;
+    display: flex;
+    position: absolute;
+    align-items: center;
+    justify-content: center;
+}
+
+.tables_spinner {
+    border: 7px solid #f3f3f3;
+    border-top: 8px solid indianred;
+    border-bottom: 8px solid indianred;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    animation: spin 0.5s linear infinite;
+}
+
+.tables_checkmark {
+    top: -4px;
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    position: absolute;
+    right: 12px;
+}
+
+.tables_checkmark_stem, .tables_checkmark_kick {
+    position: absolute;
+    background: #27ae60;
+    border-radius: 2px;
+}
+
+.tables_checkmark_stem {
+    top: 12px;
+    width: 4px;
+    height: 0;
+    transform: rotate(-45deg);
+    animation: checkmark-stem 0.3s forwards;
+}
+
+.tables_checkmark_kick {
+    top: 12px;
+    width: 0;
+    height: 4px;
+    transform: rotate(-55deg);
+    animation: checkmark-kick 0.2s 0.3s forwards;
+}
+
+@keyframes checkmark-stem {
+    to { height: 13px; }
+}
+
+@keyframes checkmark-kick {
+    to { width: 22px; }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

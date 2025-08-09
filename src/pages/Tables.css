@@ -1,6 +1,11 @@
 
 .tables {
     height: 100%;
+    position: relative;
+}
+
+.tables_header {
+    display: flex;
 }
 
 .tables_wrapper {

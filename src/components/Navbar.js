@@ -1,43 +1,25 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import "./Navbar.css";
-import {AuthContext} from "../context/AuthContext";
-import apiReq from "../apiReq";
+import {useAuth} from "../context/AuthContext";
 import {useNavigate} from "react-router-dom";
 
 const Navbar = () => {
-    const { currentUser } = useContext(AuthContext);
-    const { updateUser } = useContext(AuthContext);
+    const { user } = useAuth();
     const navigate = useNavigate();
-
+    
     useEffect(() => {
-        checkUser();
+        console.log(user);
     }, []);
-
-    const checkUser = async () => {
-        await apiReq.post("auth/ping", {})
-            .then(res => {
-                if (res.data === 'not found') {
-                    updateUser(null);
-                }
-            })
-            .catch(() => {
-                console.log("failed")
-            });
-    }
-
+    
     return (
         <div className={'navbar'}>
-            {currentUser ? (
+            {user ? (
                 <div className={'navbar_wrapper'}>
                     <div className={'navbar_status'} onClick={() => navigate('/')}>
-                        {currentUser.isAdmin ? (
-                            <div>*Admin</div>
-                        ) : (
-                            <div>User</div>
-                        )}
+                        <div>*{user.role}</div>
                     </div>
                     <div className={'navbar_user'}>
-                        Connected: {currentUser.name}
+                        Connected: {user.name}
                     </div>
                 </div>
             ) : (
