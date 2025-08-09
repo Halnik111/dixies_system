@@ -23,7 +23,7 @@ const Navbar = () => {
                     </div>
                 </div>
             ) : (
-                <div className={'navbar_wrapper'}>
+                <div className={'navbar_wrapper'} onClick={() => navigate('/login')}>
                     || User not Connected ||
                 </div>
             )}

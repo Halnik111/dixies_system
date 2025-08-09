@@ -6,9 +6,13 @@ import TableDetails from "../components/TableDetails";
 import { useTables } from "../context/TablesContext";
 
 const Tables = () => {
-    const { tables, loading } = useTables();
+    const { tables, loading, fetchTables } = useTables();
     const [activeTable, setActiveTable] = useState(null);
 
+    useEffect(() => {
+        fetchTables();
+    }, [])
+    
     useEffect(() => {
         setActiveTable(tables.find(i => i._id === activeTable));
     }, [tables]);

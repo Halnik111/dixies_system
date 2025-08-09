@@ -4,14 +4,19 @@ import './index.css';
 import App from './App';
 import {AuthProvider} from "./context/AuthContext";
 import {TablesProvider} from "./context/TablesContext";
+import {HashRouter} from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <AuthProvider>
-        <TablesProvider>
-            <App />
-        </TablesProvider>
-    </AuthProvider>
+    <HashRouter>
+        <AuthProvider>
+            <TablesProvider>
+
+                <App />
+
+            </TablesProvider>
+        </AuthProvider>
+    </HashRouter>
 );
 
 // If you want to start measuring performance in your app, pass a function
