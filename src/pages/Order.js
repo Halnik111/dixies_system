@@ -1,10 +1,10 @@
 import React, {useEffect, useRef, useState} from 'react';
 import './Order.css';
-import apiReq from "../apiReq";
 import {useLocation, useNavigate} from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import OrderKeyboard from "../components/OrderKeyboard";
 import {useTables} from "../context/TablesContext";
+import {useManageOrder} from "../hooks/orderHooks";
 
 const Order = () => {
     const location = useLocation();
@@ -14,9 +14,11 @@ const Order = () => {
     const navigate = useNavigate();
     let orderRef = useRef(0);
     const [activeOrder, setActiveOrder] = useState(0);
+    const { updateOrder, createOrder, error, loading } = useManageOrder();
 
     
     useEffect(() => {
+        console.log(orders);
         if (location.state.order) {
             setOrders(location.state.order.meals);
             orderRef.current = location.state.order.meals[location.state.order.meals.length - 1].ref;
@@ -46,16 +48,13 @@ const Order = () => {
         const model = {
             orders, currentUser: user, table, totalPriceRound
         };
-         await apiReq.post('/order/newOrder', model)
-             .then(async res => {
-                 console.log(model);
-                 await apiReq.post('/tables/openTable', {table: table, orderId: res.data._id})
-             })
-             .then(() => {
-                 socket.emit('tableChange', 'Table changes: ' + table);
-             })
-             .finally(() => navigate('/tables'))
-             .catch(err => console.log(err));
+        if (location.state.order) {
+            console.log('update order');
+            await updateOrder(model, table, location.state.order._id);
+        }
+        else {
+            await createOrder(model, table);
+        }
     }
 
     const displayOrder = (mealOrder) => {
