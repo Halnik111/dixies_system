@@ -18,7 +18,7 @@ const TableDetails = ({ table, setActiveTable }) => {
         else {
             setOrder(null);
         }
-    }, [table, tables]);
+    }, [table, orders, tables]);
 
     const closeTable = async () => {
         await apiReq.post('/tables/closeTable', {table: table._id})

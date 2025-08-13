@@ -17,7 +17,10 @@ const Tables = () => {
     }, [])
     
     useEffect(() => {
-        setActiveTable(tables.find(i => i._id === activeTable));
+        if (!loading) {
+            setActiveTable(tables.find(i => i._id === activeTable));
+        }
+        console.log(tables)
     }, [tables]);
     
     return (
