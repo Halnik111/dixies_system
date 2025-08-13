@@ -7,8 +7,7 @@ import TableOrder from "./TableOrder";
 
 const TableDetails = ({ table, setActiveTable }) => {
     const [order, setOrder] = useState();
-    const { orders } = useTables();
-    const { tables, socket } = useTables();
+    const { tables, socket, orders, loading } = useTables();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -37,14 +36,15 @@ const TableDetails = ({ table, setActiveTable }) => {
                     <div className={'table_details_highlight'}>{order?.price}€</div>
                 </div>
                 <div className={'table_buttons'}>
-                    <button disabled={table.status === 'taken'} className={"button order_button"}
+                    {loading && <div className={'loading'}>Loading...</div>}
+                    <button disabled={order || loading} className={"button order_button"}
                             onClick={() => navigate('/order', {state: {table: table.name}})}>New
                     </button>
-                    <button onClick={() => navigate('/order', {state: {table: table.name, order: order}})} disabled={table.status !== 'taken'} className={"button order_button"}>Edit</button>
-                    <button onClick={closeTable} disabled={table.status !== 'taken'}
+                    <button onClick={() => navigate('/order', {state: {table: table.name, order: order}})} disabled={!order || loading} className={"button order_button"}>Edit</button>
+                    <button onClick={closeTable} disabled={!order || loading}
                             className={"button order_button"}>Close
                     </button>
-                    <button disabled={table.status !== 'taken'}
+                    <button disabled={!order || loading}
                             className={"button order_button"} onClick={() => navigate('/print', {state: {order: order}})}>Print
                     </button>
                 </div>
