@@ -42,9 +42,11 @@ const useManageOrder = () => {
                 socket.emit('tableChange', 'Table changes: ' + table);
             })
             .finally(() => {
-                navigate('/tables')
-                setLoading(false);
-                setError(null);
+                socket.once('tableChanged', async () => {
+                    navigate('/tables')
+                    setLoading(false);
+                    setError(null);
+                });
             })
             .catch(err => {
                 setError(err);

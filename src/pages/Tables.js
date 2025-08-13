@@ -6,7 +6,7 @@ import TableDetails from "../components/TableDetails";
 import { useTables } from "../context/TablesContext";
 
 const Tables = () => {
-    const { tables, loading, fetchTables } = useTables();
+    const { tables, loading, orders, fetchTables } = useTables();
     const [activeTable, setActiveTable] = useState(null);
 
     useEffect(() => {
@@ -19,8 +19,9 @@ const Tables = () => {
     useEffect(() => {
         if (!loading) {
             setActiveTable(tables.find(i => i._id === activeTable));
+            console.log('inside')
         }
-        console.log(tables)
+        console.log(orders)
     }, [tables]);
     
     return (
