@@ -12,16 +12,13 @@ const Tables = () => {
     useEffect(() => {
         if (tables.length < 1) {
             fetchTables();
-            console.log("Fetching tables...");
         }
     }, [])
     
     useEffect(() => {
         if (!loading) {
             setActiveTable(tables.find(i => i._id === activeTable));
-            console.log('inside')
         }
-        console.log(orders)
     }, [tables]);
     
     return (

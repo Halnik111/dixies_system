@@ -15,8 +15,16 @@ export const TablesProvider = ({children}) => {
         fetchTables();
         
         // Initialize socket connection
-        setSocket(io('wss://dixiessystembackend-production.up.railway.app'));
+        const socketInstance = io('https://dixiessystem-production.up.railway.app', {
+            transports: ['websocket']
+        });
+        setSocket(socketInstance);
         //setSocket(io("ws://localhost:8080"));
+        
+        return () => {
+            // Cleanup socket connection on unmount
+            socketInstance.disconnect();
+        }
     },[]);
     
     useEffect(  () =>{
@@ -30,15 +38,17 @@ export const TablesProvider = ({children}) => {
             await fetchTables();
         });
     }, [socket])
-    
+
     const fetchTables = async () => {
         setLoading(true);
         await apiReq.get("/tables/getTables")
             .then(res => {
                 setTables(res.data);
-                apiReq.post('/order/getAllActiveOrders', {orders: res.data.map(table => table.orderId)})
-                    .then(res => setOrders(res.data))
-                setLoading(false);
+                return apiReq.post('/order/getAllActiveOrders', {orders: res.data.map(table => table.orderId)})
+                    .then(res => {
+                        setOrders(res.data)
+                        setLoading(false);
+                    })
             })
             .catch(() => {
                 setLoading(false);
