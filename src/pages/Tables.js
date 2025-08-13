@@ -10,7 +10,10 @@ const Tables = () => {
     const [activeTable, setActiveTable] = useState(null);
 
     useEffect(() => {
-        fetchTables();
+        if (tables.length < 1) {
+            fetchTables();
+            console.log("Fetching tables...");
+        }
     }, [])
     
     useEffect(() => {
@@ -25,7 +28,7 @@ const Tables = () => {
                 </div>
                 <div className={'tables_window'}>
                     <div className={'tables_grid'}>
-                        {tables.map(table => <Table key={table._id} table={table} setActiveTable={setActiveTable}/>)}
+                        {tables.map(table => <Table key={table._id} table={table} setActiveTable={setActiveTable} disabled={loading}/>)}
                         <div id={'table_divider_vertical'}></div>
                         <div id={'table_divider_horizontal'}></div>
                     </div>
