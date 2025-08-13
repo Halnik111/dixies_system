@@ -15,7 +15,7 @@ export const TablesProvider = ({children}) => {
         fetchTables();
         
         // Initialize socket connection
-        const socketInstance = io('https://dixiessystem-production.up.railway.app', {
+        const socketInstance = io('https://dixiessystembackend-production.up.railway.app', {
             reconnection: true,
             reconnectionAttempts: Infinity,
             reconnectionDelay: 1000,
