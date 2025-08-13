@@ -16,7 +16,10 @@ export const TablesProvider = ({children}) => {
         
         // Initialize socket connection
         const socketInstance = io('https://dixiessystem-production.up.railway.app', {
-            transports: ['websocket']
+            reconnection: true,
+            reconnectionAttempts: Infinity,
+            reconnectionDelay: 1000,
+            reconnectionDelayMs: 5000,
         });
         setSocket(socketInstance);
         //setSocket(io("ws://localhost:8080"));
