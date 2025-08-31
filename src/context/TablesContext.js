@@ -6,7 +6,6 @@ export const TablesContext = createContext();
 
 export const TablesProvider = ({children}) => {
     const [tables, setTables] = useState([]);
-    const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [socket, setSocket] = useState(null);
 
@@ -15,19 +14,19 @@ export const TablesProvider = ({children}) => {
         fetchTables();
         
         // Initialize socket connection
-        const socketInstance = io('https://dixiessystembackend-production.up.railway.app', {
-            reconnection: true,
-            reconnectionAttempts: Infinity,
-            reconnectionDelay: 1000,
-            reconnectionDelayMs: 5000,
-        });
-        setSocket(socketInstance);
-        //setSocket(io("ws://localhost:8080"));
+        // const socketInstance = io('https://dixiessystembackend-production.up.railway.app', {
+        //     reconnection: true,
+        //     reconnectionAttempts: Infinity,
+        //     reconnectionDelay: 1000,
+        //     reconnectionDelayMs: 5000,
+        // });
+        // setSocket(socketInstance);
+        setSocket(io("ws://localhost:8080"));
         
-        return () => {
-            // Cleanup socket connection on unmount
-            socketInstance.disconnect();
-        }
+        // return () => {
+        //     // Cleanup socket connection on unmount
+        //     socketInstance.disconnect();
+        // }
     },[]);
     
     useEffect(  () =>{
@@ -47,11 +46,7 @@ export const TablesProvider = ({children}) => {
         await apiReq.get("/tables/getTables")
             .then(res => {
                 setTables(res.data);
-                return apiReq.post('/order/getAllActiveOrders', {orders: res.data.map(table => table.orderId)})
-                    .then(res => {
-                        setOrders(res.data)
-                        setLoading(false);
-                    })
+                setLoading(false);
             })
             .catch(() => {
                 setLoading(false);
@@ -60,7 +55,7 @@ export const TablesProvider = ({children}) => {
     }
 
     return (
-        <TablesContext.Provider value={{ tables, orders, loading, fetchTables, socket }}>
+        <TablesContext.Provider value={{ tables, loading, fetchTables, socket }}>
             {children}
         </TablesContext.Provider>
     )

@@ -7,13 +7,11 @@ const OrderKeyboard = ({ orders, setOrders, activeOrder }) => {
     let mealRef =useRef(0);
     const [switchControl, setSwitchControl] = useState('meals');
     const [message, setMessage] = useState('');
-    const index = orders.findIndex(item => item.ref === activeOrder);
+    const index = orders.findIndex(item => item._id === activeOrder);
     const arr = [...orders];
 
     useEffect(() => {
         fetchMenu();
-        
-        console.log(mealRef.current)
     }, []);
 
     const fetchMenu = async () => {
