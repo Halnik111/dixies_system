@@ -4,12 +4,18 @@ import './index.css';
 import App from './App';
 import {AuthProvider} from "./context/AuthContext";
 import {TablesProvider} from "./context/TablesContext";
+import {OrderProvider} from "./context/OrdersContext";
+import {MealsProvider} from "./context/MealsContext";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <AuthProvider>
         <TablesProvider>
-            <App />
+            <OrderProvider>
+                <MealsProvider>
+                    <App />
+                </MealsProvider>
+            </OrderProvider>
         </TablesProvider>
     </AuthProvider>
 );
