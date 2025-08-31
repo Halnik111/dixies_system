@@ -16,6 +16,7 @@ const Order = () => {
 
     
     useEffect(() => {
+        console.log(orders);
         if (location.state.order) {
             console.log(location.state.order.orders);
             setOrders(location.state.order.orders);

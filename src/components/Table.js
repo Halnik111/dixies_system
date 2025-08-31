@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import "./Table.css";
 
-const Table = ({table, setActiveTable}) => {
+const Table = ({table, setActiveTable, disabled}) => {
     const [tableColor, setTableColor] = useState("white");
 
 
@@ -26,7 +26,11 @@ const Table = ({table, setActiveTable}) => {
     }
 
     return (
-        <div id={table.name} className={"table"} style={{color: tableColor, borderColor: tableColor}} onClick={() => clickTable()}>
+        <div id={table.name} className={"table"} style={{color: tableColor, borderColor: tableColor}} onClick={() => {
+            if (!disabled) {
+                clickTable();
+            }
+        }}>
             <div>
                 {table.name}
             </div>

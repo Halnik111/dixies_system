@@ -7,10 +7,6 @@ const Navbar = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
     
-    useEffect(() => {
-        console.log(user);
-    }, []);
-    
     return (
         <div className={'navbar'}>
             {user ? (

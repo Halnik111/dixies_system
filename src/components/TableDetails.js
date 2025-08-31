@@ -14,6 +14,7 @@ const TableDetails = ({ table, setActiveTable }) => {
     const { tables, socket } = useTables();
     const { user } = useAuth();
     const { mealsById } = useMeals();
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -36,6 +37,7 @@ const TableDetails = ({ table, setActiveTable }) => {
             setTableOrder(null);
         }
     }, [tables, table]);
+
 
     const closeTable = async () => {
         console.log(order)
@@ -62,7 +64,7 @@ const TableDetails = ({ table, setActiveTable }) => {
                     <button onClick={closeTable} disabled={table.status !== 'taken'}
                             className={"button order_button"}>Close
                     </button>
-                    <button disabled={table.status !== 'taken'}
+                    <button disabled={!order || loading}
                             className={"button order_button"} onClick={() => navigate('/print', {state: {order: order}})}>Print
                     </button>
                 </div>

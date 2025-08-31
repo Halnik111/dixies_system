@@ -1,11 +1,13 @@
 import {createContext, useCallback, useContext, useEffect, useState} from "react";
 import apiReq from "../apiReq";
+import {useNavigate} from "react-router-dom";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null); // { id, role }
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     // Fetch current logged-in user from backend
     const refreshUser = useCallback(async () => {
@@ -16,6 +18,7 @@ export const AuthProvider = ({ children }) => {
             setUser(await res);
         } catch {
             setUser(null);
+            navigate("/login");
         } finally {
             setLoading(false);
         }

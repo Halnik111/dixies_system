@@ -30,7 +30,6 @@ const OrderKeyboard = ({ orders, setOrders, activeOrder }) => {
             console.log('Discount applied for burger + side combo');
         }
         setOrders(arr);
-        console.log(orders)
         //mealRef.current = mealRef.current + 1;
     }
     

@@ -10,6 +10,21 @@ const Print = () => {
         return parseFloat(num).toFixed(2)
     }
 
+    const toLocalISOString = (date = new Date()) => {
+        const pad = (n, z = 2) => ('00' + n).slice(-z);
+        const tz = -date.getTimezoneOffset();
+        const sign = tz >= 0 ? '+' : '-';
+        const absTz = Math.abs(tz);
+        return date.getFullYear() + '-' +
+            pad(date.getMonth() + 1) + '-' +
+            pad(date.getDate()) + 'T' +
+            pad(date.getHours()) + ':' +
+            pad(date.getMinutes()) + ':' +
+            pad(date.getSeconds()) + '.' +
+            pad(date.getMilliseconds(), 3) +
+            sign + pad(Math.floor(absTz / 60)) + ':' + pad(absTz % 60);
+    };
+
     const serviceUUID = 'e7810a71-73ae-499d-8c15-faa9aef0c3f2'; // Use your printer's actual service UUID
     const characteristicUUID = 'bef8d6c9-9c21-4c9e-b632-bd58c1009f9f'; // Replace with actual write characteristic UUID
 
@@ -197,7 +212,7 @@ const Print = () => {
                 <div className={'print_order_footer'}>
                     <div>{order.createdAt}</div>
                     <div>{order._id}</div>
-                    <div>{new Date().toISOString()}</div>
+                    <div>{toLocalISOString(new Date())}</div>
                 </div>
             </div>
         </div>

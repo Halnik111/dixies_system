@@ -15,49 +15,47 @@ const App = () => {
 
 
     return (
-        <HashRouter>
-            <div className={'app'}>
-                <Navbar />
-                <div className={'wrapper'}>
-                    <Routes>
-                        <Route path={"/"}>
-                            <Route path={'login'} element={<Login />}/>
-                            <Route path={'noAccess'} element={<NoAccess />} />
-                            <Route index element={
-                                <ProtectedRoute allowedRoles={["Admin", "Manager" ,"User"]}>
+        <div className={'app'}>
+            <Navbar />
+            <div className={'wrapper'}>
+                <Routes>
+                    <Route path={"/"}>
+                        <Route path={'login'} element={<Login />}/>
+                        <Route path={'noAccess'} element={<NoAccess />} />
+                        <Route index element={
+                            <ProtectedRoute allowedRoles={["Admin", "Manager" ,"User"]}>
                                 <Home />
-                                </ProtectedRoute>} 
-                            />
-                            <Route path={'tables'} element={
-                                <ProtectedRoute allowedRoles={["Admin", "Manager" ,"User"]}>
-                                    <Tables />
-                                </ProtectedRoute>}
-                            />
-                            <Route path={'order'} element={
-                                <ProtectedRoute allowedRoles={["Admin", "Manager" ,"User"]}>
-                                    <Order />
-                                </ProtectedRoute>}
-                            />
-                            <Route path={'print'} element={
-                                <ProtectedRoute allowedRoles={["Admin", "Manager" ,"User"]}>
-                                    <Print />
-                                </ProtectedRoute>}
-                            />
-                            <Route path={'dashboard'} element={
-                                <ProtectedRoute allowedRoles={["Admin"]}>
+                            </ProtectedRoute>}
+                        />
+                        <Route path={'tables'} element={
+                            <ProtectedRoute allowedRoles={["Admin", "Manager" ,"User"]}>
+                                <Tables />
+                            </ProtectedRoute>}
+                        />
+                        <Route path={'order'} element={
+                            <ProtectedRoute allowedRoles={["Admin", "Manager" ,"User"]}>
+                                <Order />
+                            </ProtectedRoute>}
+                        />
+                        <Route path={'print'} element={
+                            <ProtectedRoute allowedRoles={["Admin", "Manager" ,"User"]}>
+                                <Print />
+                            </ProtectedRoute>}
+                        />
+                        <Route path={'dashboard'} element={
+                            <ProtectedRoute allowedRoles={["Admin"]}>
                                 <Dashboard />
-                                </ProtectedRoute>}
-                            />
-                            <Route path={'settings'} element={
-                                <ProtectedRoute allowedRoles={["Admin"]}>
+                            </ProtectedRoute>}
+                        />
+                        <Route path={'settings'} element={
+                            <ProtectedRoute allowedRoles={["Admin"]}>
                                 <Settings />
-                                </ProtectedRoute>}
-                            />
-                        </Route>
-                    </Routes>
-                </div>
+                            </ProtectedRoute>}
+                        />
+                    </Route>
+                </Routes>
             </div>
-        </HashRouter>
+        </div>
     );
 }
 
