@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import './Order.css';
+import '../components/Elements.css';
 import {useLocation, useNavigate} from "react-router-dom";
 import OrderKeyboard from "../components/OrderKeyboard";
 import { useOrders } from "../context/OrdersContext";
@@ -8,7 +9,7 @@ const Order = () => {
     const location = useLocation();
     const [tableOrder, setTableOrder] = useState([]);
     const [orders, setOrders] = useState([{_id: 0, price: 0, meals: [], message: '', tableOrderId: location.state.table._id}]);
-    const { confirmOrder } = useOrders();
+    const { confirmOrder, orderLoading } = useOrders();
     const navigate = useNavigate();
     let orderRef = useRef(0);
     const [activeOrder, setActiveOrder] = useState(0);
@@ -31,11 +32,10 @@ const Order = () => {
     const onConfirm = async () => {
         const table = location.state.table;
         if (!location.state.order) {
-            confirmOrder(orders, table, null);
+            await confirmOrder(orders, table, null);
             navigate('/tables');
-        }
-        else {
-            confirmOrder(orders, table, location.state.order._id);
+        } else {
+            await confirmOrder(orders, table, location.state.order._id);
             navigate('/tables');
         }
     }
@@ -95,13 +95,23 @@ const Order = () => {
                 <div className={'order_header_table_name'}>{location.state.table.name}</div>
                 <div className={'order_header_wrapper'}>
                     <div className={'order_header_buttons'}>
-                        <svg onClick={() => navigate('/tables')} width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg className={'order_header_cancel'} onClick={() => navigate('/tables')} width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M1 11L11 1" stroke="black" strokeWidth="2" strokeLinecap="round"/>
                             <path d="M1 1L11 11" stroke="black" strokeWidth="2" strokeLinecap="round"/>
                         </svg>
-                        <svg onClick={() => {onConfirm()}} width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M1 6.5C1 6.5 2.34315 11 4 11C5.5 11 12 1.5 12 1.5" stroke="black" strokeWidth="2" strokeLinecap="round"/>
-                        </svg>
+                        {orderLoading ? (
+                            <div className="orderConfirm_loading">
+                                <div className="orderConfirm_spinner"></div>
+                            </div>
+                        ) : (
+                            <svg className={'order_header_confirm'} onClick={() => {
+                                onConfirm()
+                            }} width="13" height="12" viewBox="0 0 13 12" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1 6.5C1 6.5 2.34315 11 4 11C5.5 11 12 1.5 12 1.5" stroke="black"
+                                      strokeWidth="2" strokeLinecap="round"/>
+                            </svg>
+                        )}
                     </div>
                 </div>
             </div>

@@ -61,3 +61,39 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+.tablesDetails_loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tablesDetails_spinner {
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid indianred;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 0.75s linear infinite;
+}
+
+.orderConfirm_loading {
+    background-color: mediumseagreen;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 9px;
+    height: 17px;
+    width: 30px;
+    border-radius: 3px;
+}
+
+.orderConfirm_spinner {
+    border: 4px solid transparent;
+    border-top: 4px solid black;
+    border-left: 4px solid black;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    animation: spin 0.5s linear infinite;
+}

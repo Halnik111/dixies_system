@@ -1,11 +1,21 @@
 import React, {useState} from 'react';
 import './Print.css';
 import {useLocation} from "react-router-dom";
+import apiReq from "../apiReq";
 
 const Print = () => {
     const location = useLocation();
     const [order, setOrder] = useState(location.state.order);
+    const [table, setTable] = useState(location.state.table);
+    const [openedBy, setOpenedBy] = useState({});
 
+    useState(() => {
+        apiReq.get(`auth/getUser/${order.openedBy}`)
+            .then(res => {
+                setOpenedBy(res.data);
+            });
+    },[])
+    
     const fixTo2 = (num) => {
         return parseFloat(num).toFixed(2)
     }
@@ -43,15 +53,18 @@ const Print = () => {
         receipt += "\x1B\x21\x00"; // Normal
         receipt += "-".repeat(lineWidth) + "\n";
         receipt += "\x1B\x21\x30";
-        receipt += `${order.tableId} ${order.openedBy.name}\n\n`;
+        receipt += `${table.name} ${openedBy.name}\n\n`;
         receipt += "\x1B\x21\x20";
-        receipt += `${new Date(order.createdAt).toUTCString()}\n`;
+        receipt += `${order.createdAt}\n`;
         receipt += "\x1B\x21\x00"; // Normal
         receipt += "\n\n";
         receipt += "-".repeat(lineWidth) + "\n";
         receipt += "-".repeat(lineWidth) + "\n";
-        
-        order.meals.map(meal => {
+
+        console.log(order.orders);
+        console.log(table);
+        console.log(openedBy)
+        order.orders.map(meal => {
             //receipt += `${meal.ref}`; // Meal reference
             meal.meals.map(item => {
                 receipt += pad(`${item.meal.name}`, 23, "left");
@@ -70,9 +83,12 @@ const Print = () => {
         receipt += pad("Total:", 6) + pad(`Eur ${fixTo2(order.price)}`, 10, "right") + "\n";
         receipt += "\x1B\x21\x00"; // Normal
         receipt += "-".repeat(lineWidth) + "\n";
-        receipt += pad(`${order.createdAt}`, lineWidth, "center") + "\n";
+        receipt += pad(`C-${order.createdAt}`, lineWidth, "center") + "\n";
+        receipt += pad(`U-${order.updatedAt}`, lineWidth, "center") + "\n";
+        receipt += pad(`S-${order.servedAt}`, lineWidth, "center") + "\n";
+        receipt += pad(`X-${order.closedAt}`, lineWidth, "center") + "\n";
         receipt += pad(`${order._id}`, lineWidth, "center") + "\n";
-        receipt += pad(`${new Date().toISOString()}`, lineWidth, "center") + "\n";
+        receipt += pad(`ISO-${new Date().toISOString()}`, lineWidth, "center") + "\n";
         receipt += "\n\n\n";
 
         return receipt;
@@ -178,15 +194,15 @@ const Print = () => {
                     </div>
                     <div className={'print_header_company'}>Dixie's Burger</div>
                     <div className={'print_header_details'}>
-                        <div className={'print_header_employee'}>Service: {order.openedBy.name}</div>
-                        <div className={'print_header_table'}>Table: {order.tableId}</div>
+                        <div className={'print_header_employee'}>Service: {openedBy?.name}</div>
+                        <div className={'print_header_table'}>Table: {table.name}</div>
                     </div>
                     <div className={'print_header_time'}>
-                        Created: {new Date(order.createdAt).toUTCString()}
+                        Created: {order.createdAt}
                     </div>
                 </div>
                 <div className={'print_order'}>
-                    {order.meals.map(tableOrder => {
+                    {order.orders.map(tableOrder => {
                         return displayOrder(tableOrder);
                     })}
                 </div>
@@ -197,7 +213,7 @@ const Print = () => {
                 <div className={'print_order_footer'}>
                     <div>{order.createdAt}</div>
                     <div>{order._id}</div>
-                    <div>{new Date().toISOString()}</div>
+                    <div>{new Date().toLocaleString()}</div>
                 </div>
             </div>
         </div>

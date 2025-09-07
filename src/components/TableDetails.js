@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './TableDetails.css';
+import '../components/Elements.css';
 import apiReq from "../apiReq";
 import { useTables } from "../context/TablesContext";
 import {useNavigate} from "react-router-dom";
@@ -11,6 +12,7 @@ const TableDetails = ({ table, setActiveTable }) => {
     const [order, setOrder] = useState();
     const [tableOrder, setTableOrder] = useState({});
     const { tableOrders } = useOrders();
+    const [closing, setClosing] = useState(false);
     const { tables, socket } = useTables();
     const { user } = useAuth();
     const { mealsById } = useMeals();
@@ -38,13 +40,15 @@ const TableDetails = ({ table, setActiveTable }) => {
     }, [tables, table]);
 
     const closeTable = async () => {
-        console.log(order)
+        setClosing(true);
+        //await new Promise(resolve => setTimeout(resolve, 2000)); // 2-second delay
         await apiReq.put('/tables/closeTable', {tableId: table._id, closedBy: user._id})
             .then((res) => {
                 socket.emit('closeTable', (res) => {
                     setActiveTable(res.data)
                     setOrder(res.tableOrders);
-                    setTableOrder(res.tableOrders.orders)
+                    setTableOrder(res.tableOrders.orders);
+                    setClosing(false)
                 });
             })
     };
@@ -66,12 +70,15 @@ const TableDetails = ({ table, setActiveTable }) => {
                             className={"button order_button"}>Close
                     </button>
                     <button disabled={table.status !== 'taken'}
-                            className={"button order_button"} onClick={() => navigate('/print', {state: {order: order}})}>Print
+                            className={"button order_button"} onClick={() => navigate('/print', {state: {order: tableOrder, table: table}})}>Print
                     </button>
                 </div>
             </div>
             <div className={'table_details_content'}>
-                {order && <TableOrder tableOrder={order}/>}
+                {order && !closing && <TableOrder tableOrder={order}/>}
+                {closing && <div className="tablesDetails_loading">
+                    <div className="tablesDetails_spinner"></div>
+                </div>}
             </div>
         </div>
         ) : (

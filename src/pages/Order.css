@@ -33,7 +33,7 @@
     font-size: 20px;
 }
 
-.order_header_buttons :nth-child(2) {
+.order_header_confirm {
     background-color: mediumseagreen;
     padding: 9px;
     height: 17px;
@@ -41,7 +41,7 @@
     border-radius: 3px;
 }
 
-.order_header_buttons :nth-child(1) {
+.order_header_cancel {
     padding: 10px;
     background-color: crimson;
     height: 15px;

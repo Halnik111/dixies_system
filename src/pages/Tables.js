@@ -5,7 +5,6 @@ import Table from "../components/Table";
 import TableDetails from "../components/TableDetails";
 import { useTables } from "../context/TablesContext";
 import {useOrders} from "../context/OrdersContext";
-import order from "./Order";
 
 const Tables = () => {
     const { tables, loading, fetchTables } = useTables();
@@ -33,7 +32,7 @@ const Tables = () => {
                     </div>
                 </div>
                 <TableDetails table={activeTable} setActiveTable={setActiveTable}/>
-                {loading || orderLoading ? (
+                {loading ? (
                         <div className="tables_loading">
                             <div className="tables_spinner"></div>
                         </div>

@@ -31,7 +31,8 @@ export const OrderProvider = ({ children }) => {
             setTableOrders(data);
             setOrders(data.orders)
         });
-    }, [socket])
+    }, [socket]);
+    
     const confirmOrder = async (orders, table, tableOrderId) => {
         setLoading(true);
         let totalPrice = 0;
@@ -47,6 +48,7 @@ export const OrderProvider = ({ children }) => {
                         setOrders(res.tableOrders.orders);
                     });
                     setLoading(false);
+                    return true;
                 })
                 .catch(err => {
                     console.log(err);
