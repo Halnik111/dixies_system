@@ -36,8 +36,6 @@ const OrderKeyboard = ({ orders, setOrders, activeOrder }) => {
     
     const confirmCustom = async (e) => {
         e.preventDefault();
-        const index = orders.findIndex(item => item.ref === activeOrder);
-        const arr = [...orders];
         arr[index].message = message;
         setOrders(arr);
         setMessage('');

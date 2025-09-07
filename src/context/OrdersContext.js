@@ -11,7 +11,7 @@ export const OrderProvider = ({ children }) => {
     const { user } = useAuth();
     const [tableOrders, setTableOrders] = useState([]);
     const [ orders, setOrders ] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
 
     useEffect(() => {
@@ -20,14 +20,16 @@ export const OrderProvider = ({ children }) => {
     }, [])
 
     useEffect(  () =>{
-        socket?.on('tableChanged', async () => {
+        socket?.on('tableChanged', async (data) => {
             console.log('Table change');
-            await fetchActiveTableOrders();
+            setTableOrders(data);
+            setOrders(data.orders)
         });
 
-        socket?.on('tableClosed', async () => {
+        socket?.on('tableClosed', async (data) => {
             console.log('Table closed');
-            await fetchActiveTableOrders()
+            setTableOrders(data);
+            setOrders(data.orders)
         });
     }, [socket])
     const confirmOrder = async (orders, table, tableOrderId) => {
@@ -35,11 +37,15 @@ export const OrderProvider = ({ children }) => {
         let totalPrice = 0;
         orders.forEach(a => totalPrice += a.price);
         const totalPriceRound = Math.round(totalPrice * 100) / 100;
-
+        //await new Promise(resolve => setTimeout(resolve, 2000)); // 2-second delay
+        
         if (tableOrderId) {
             await apiReq.put(`/tableOrder/editTableOrder/${tableOrderId}`, {orders: orders, tableId: table._id, price: totalPriceRound})
                 .then(() => {
-                    socket.emit('tableChange', 'Table changes: ' + table);
+                    socket.emit('tableChange', table, (res) => {
+                        setTableOrders(res.tableOrders);
+                        setOrders(res.tableOrders.orders);
+                    });
                     setLoading(false);
                 })
                 .catch(err => {
@@ -53,7 +59,10 @@ export const OrderProvider = ({ children }) => {
                     await apiReq.post('/tables/openTable', { table: table, tableOrderId: res.data._id });
                 })
                 .then(() => {
-                    socket.emit('tableChange', 'Table changes: ' + table);
+                    socket.emit('tableChange', table, (res) => {
+                        setTableOrders(res.tableOrders);
+                        setOrders(res.tableOrders.orders);
+                    });
                     setLoading(false);
                 })
                 .catch(err => {
@@ -73,7 +82,7 @@ export const OrderProvider = ({ children }) => {
     };
 
     return (
-        <OrderContext.Provider value={{ confirmOrder, tableOrders, orders, fetchActiveTableOrders }}>
+        <OrderContext.Provider value={{ confirmOrder, tableOrders, orders, fetchActiveTableOrders, orderLoading: loading }}>
             {children}
         </OrderContext.Provider>
     );

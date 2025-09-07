@@ -41,8 +41,11 @@ const TableDetails = ({ table, setActiveTable }) => {
         console.log(order)
         await apiReq.put('/tables/closeTable', {tableId: table._id, closedBy: user._id})
             .then((res) => {
-                socket.emit('closeTable', 'Closing Table ' + table.name);
-                setActiveTable(res.data)
+                socket.emit('closeTable', (res) => {
+                    setActiveTable(res.data)
+                    setOrder(res.tableOrders);
+                    setTableOrder(res.tableOrders.orders)
+                });
             })
     };
 
