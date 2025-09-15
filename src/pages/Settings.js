@@ -1,5 +1,6 @@
 import './Settings.css';
 import React, {useEffect} from 'react';
+import MenuEditor from "../components/MenuEditor";
 
 const Settings = () => {
 
@@ -11,6 +12,7 @@ const Settings = () => {
     return (
         <div className={'settings'}>
             Settings Page
+            <MenuEditor />
         </div>
     );
 };

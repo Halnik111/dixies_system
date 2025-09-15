@@ -14,6 +14,24 @@ export const MealsProvider = ({ children }) => {
         const map = Object.fromEntries(data.map(m => [m._id, m]));
         setMealsById(map);
     };
+    
+    const updateMeal = async (meal) => {
+        await apiReq.put(`meals/${meal._id}`, meal);
+        socket.emit('mealsChange', (res) => {
+            const map = Object.fromEntries(res.meals.map(m => [m._id, m]));
+            setMealsById(map);
+        }); // notify server
+        console.log(meal)
+    };
+    
+    const createMeal = async (meal) => {
+        await apiReq.post(`meals/`, meal);
+        socket.emit('mealsChange', (res) => {
+            const map = Object.fromEntries(res.meals.map(m => [m._id, m]));
+            setMealsById(map);
+        }); // notify server
+        console.log(meal)
+    };
 
     useEffect(() => {
         loadMeals();
@@ -26,7 +44,7 @@ export const MealsProvider = ({ children }) => {
     }, [socket]);
 
     return (
-        <MealsContext.Provider value={{ mealsById, refreshMeals: loadMeals }}>
+        <MealsContext.Provider value={{ mealsById, refreshMeals: loadMeals, updateMeal, createMeal }}>
             {children}
         </MealsContext.Provider>
     );
