@@ -1,40 +1,234 @@
-
+/* ====== Dashboard layout ====== */
 .dashboard {
-
+    
 }
 
-.dashboard_wrapper {
+.dashboard-header {
     display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.dashboard_nav {
-    position: sticky;
-    display: flex;
-    justify-content: center;
     align-items: center;
-    top: 0;
-    background-color: gray;
+    justify-content: space-between;
+    margin-bottom: 12px;
 }
 
-.dashboard_nav_wrapper {
-    font-size: 22px;
-    color: white;
+.dashboard-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-right: 10px;
+    color: #e6e8ec;
+}
+
+/* --- Cards layout --- */
+.cards-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 0 12px;
+}
+
+.card {
+    background: #1e222a;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 14px;
+    padding: 12px;
+    color: #e6e8ec;
+}
+
+.card-header {
     display: flex;
-    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
 }
 
-.dashboard_overview {
-    height: 500px;
-    background-color: darkolivegreen;
+.card-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
 }
 
-.dashboard_graph {
-    height: 500px;
-    background-color: coral;
+.kpi-value {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: .2px;
 }
 
-.dashboard_nav_new {
+.kpi-subtle {
+    font-size: 12px;
+    color: rgba(230,232,236,.7);
+}
 
+/* --- Simple line chart --- */
+.chart-wrap {
+    width: 100%;
+    overflow: hidden;
+}
+.chart-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+.chart-axis {
+    stroke: rgba(255,255,255,.18);
+    stroke-width: 1;
+}
+.chart-grid {
+    stroke: rgba(255,255,255,.08);
+    stroke-width: 1;
+}
+.chart-line {
+    fill: none;
+    stroke: #e6e8ec; /* neutral light */
+    stroke-width: 2;
+}
+.chart-dot {
+    fill: #e6e8ec;
+}
+
+/* Mobile tweaks */
+@media (min-width: 560px) {
+    .cards-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+
+/* ====== Card ====== */
+.card {
+    background: #1e222a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 12px;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.card-title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #e6e8ec;
+}
+
+.card-subtle {
+    font-size: 12px;
+    color: rgba(230, 232, 236, 0.7);
+}
+
+/* ====== Orders list ====== */
+.orders-list {
+    max-height: 380px;
+    overflow: auto;
+    display: grid;
+    grid-auto-rows: minmax(44px, auto);
+    row-gap: 8px;
+}
+
+.order-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 12px;
+    padding: 8px 12px;
+}
+
+.order-left {
+    display: grid;
+    grid-auto-rows: auto;
+    row-gap: 2px;
+}
+
+.order-id {
+    font-size: 12px;
+    font-weight: 600;
+    color: #e6e8ec;
+}
+
+.order-ts {
+    font-size: 12px;
+    color: rgba(230, 232, 236, 0.7);
+}
+
+.order-right {
+    text-align: right;
+}
+
+.order-amount {
+    font-size: 12px;
+    font-weight: 700;
+    color: #e6e8ec;
+}
+
+.order-meta {
+    font-size: 12px;
+    color: rgba(230, 232, 236, 0.7);
+}
+
+/* ====== Timeline dropdown (pure CSS) ====== */
+.ds-range {
+    position: relative;
+}
+
+.ds-range-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 6px;
+    background: transparent;
+    color: whitesmoke;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+}
+
+.ds-range-btn:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.ds-range-btn svg {
+    opacity: 0.7;
+}
+
+.ds-range-kbd {
+    margin-left: 8px;
+    opacity: 0.6;
+    font-size: 12px;
+}
+
+.ds-range-menu {
+    position: absolute;
+    top: 110%;
+    left: 0;
+    min-width: 180px;
+    background: #282c34;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    z-index: 50;
+}
+
+.ds-range-item {
+    width: 100%;
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: #e6e8ec;
+    background: transparent;
+    border: 0;
+    outline: none;
+    cursor: pointer;
+}
+
+.ds-range-item:hover {
+    background: rgba(255, 255, 255, 0.06);
 }
