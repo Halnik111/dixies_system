@@ -4,7 +4,11 @@ import { useMeals } from "../context/MealsContext";
 import Select from "react-select";
 
 const MenuEditor = () => {
-    const { mealsById, refreshMeals, updateMeal, createMeal } = useMeals();
+    const { mealsById, refreshMeals, updateMeal, createMeal, reorderMeals } = useMeals();
+
+    const [reorderMode, setReorderMode] = useState(false);
+    const [orderedMeals, setOrderedMeals] = useState([]);
+    const [dragIndex, setDragIndex] = useState(null);
 
     // ---- Build categories & selection ------------------------------------------------
     const categories = useMemo(() => {
@@ -34,6 +38,15 @@ const MenuEditor = () => {
         refreshMeals?.();
     }, []);
 
+    // whenever category/meals change, seed ordered list by sortIndex (fallback name)
+    useEffect(() => {
+        if (!selectedCategory) return;
+        const list = (categories[selectedCategory] || []).slice()
+            .sort((a, b) => (a.sortIndex ?? 1e9) - (b.sortIndex ?? 1e9)
+                || a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
+        setOrderedMeals(list);
+    }, [categories, selectedCategory]);
+
     // ---- Horizontal scroll fade for category bar ------------------------------------
     const scrollRef = useRef(null);
     const [hasLeftFade, setHasLeftFade] = useState(false);
@@ -61,10 +74,31 @@ const MenuEditor = () => {
         };
     }, [categoryKeys.length, updateFades]);
 
+    // ---- Drag & drop reordering -----------------------------------------------------
+    const onDragStart = (i) => setDragIndex(i);
+    const onDragOver = (e) => e.preventDefault();
+    const onDrop = (i) => {
+        if (dragIndex === null) return;
+        const next = [...orderedMeals];
+        const [m] = next.splice(dragIndex, 1);
+        next.splice(i, 0, m);
+        setOrderedMeals(next);
+        setDragIndex(null);
+    };
+
+    const saveOrder = async () => {
+        if (!selectedCategory) return;
+        const ids = orderedMeals.map((m) => m._id);
+        await reorderMeals?.({ category: selectedCategory, ids });
+        await refreshMeals?.();
+        setReorderMode(false);
+    };
+
+
     // ---- Modal state -----------------------------------------------------------------
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState("edit"); // 'edit' | 'create'
-    const [draft, setDraft] = useState({ _id: "", name: "", category: "", price: "" });
+    const [draft, setDraft] = useState({ _id: "", name: "", category: "", price: "", available: true });
     const [errors, setErrors] = useState({});
 
     const openEdit = (meal) => {
@@ -74,6 +108,7 @@ const MenuEditor = () => {
             name: meal.name || "",
             category: meal.category || categoryKeys[0] || "",
             price: meal.price || "",
+            available: meal.available !== false, // default true
         });
         setErrors({});
         setIsModalOpen(true);
@@ -87,6 +122,7 @@ const MenuEditor = () => {
             // default to the currently selected category (or first available)
             category: selectedCategory || categoryKeys[0] || "",
             price: "",
+            available: true,
         });
         setErrors({});
         setIsModalOpen(true);
@@ -120,12 +156,14 @@ const MenuEditor = () => {
                     name: draft.name.trim(),
                     category: draft.category,
                     price: `${Number(draft.price)}`,
+                    available: !!draft.available,
                 });
             } else {
                 await createMeal?.({
                     name: draft.name.trim(),
                     category: draft.category,
                     price: `${Number(draft.price)}`,
+                    available: !!draft.available,
                 });
             }
             await refreshMeals?.();
@@ -153,9 +191,16 @@ const MenuEditor = () => {
         <div className="menuEditor">
             <div className="menuEditor-headerRow">
                 <div className="menuEditor-header">Menu Editor</div>
-                <button className="primaryBtn" onClick={openCreate} title="Create new meal">
-                    + New Meal
-                </button>
+                <div className="headerActions">
+                    <button
+                        className={`ghostBtn ${reorderMode ? "activeToggle" : ""}`}
+                        onClick={() => setReorderMode((v) => !v)}
+                        title="Reorder items"
+                    >
+                        ⇅ Reorder
+                    </button>
+                    <button className="primaryBtn" onClick={openCreate}>+ New Meal</button>
+                </div>
             </div>
 
             <div
@@ -182,28 +227,46 @@ const MenuEditor = () => {
                 </div>
             </div>
 
+            {reorderMode && (
+                <div className="reorderBar">
+                    <button className="ghostBtn" onClick={() => { setReorderMode(false); setOrderedMeals([]); }}>
+                        Cancel
+                    </button>
+                    <button className="primaryBtn" onClick={saveOrder}>Save Order</button>
+                </div>
+            )}
+
             {selectedCategory && (
                 <div className="menuCategory">
-                    <ul className="mealList">
-                        {categories[selectedCategory].map((meal) => (
-                            <li key={meal._id} className="mealItem">
-                <span className="mealName" title={meal.name}>
-                  {meal.name}
-                </span>
+                    <ul className={`mealList ${reorderMode ? "reorderOn" : ""}`}>
+                        {(orderedMeals.length ? orderedMeals : (categories[selectedCategory] || [])).map((meal, i) => (
+                            <li
+                                key={meal._id}
+                                className={`mealItem ${reorderMode ? "draggable" : ""} mealItem ${meal.available === false ? "isUnavailable" : ""}`}
+                                draggable={reorderMode}
+                                onDragStart={() => onDragStart(i)}
+                                onDragOver={onDragOver}
+                                onDrop={() => onDrop(i)}
+                            >
+                                <div className="mealLeft">
+                                    {reorderMode && <span className="dragHandle" aria-hidden>☰</span>}
+                                    <span className="mealName" title={meal.name}>{meal.name}</span>
+                                </div>
                                 <div className="mealRight">
                                     <span className="mealPrice">{meal.price}€</span>
+                                    {meal.available === false && <span className="badgeSoldOut">Unavailable</span>}
                                     <button
                                         className="editBtn"
                                         onClick={() => handleEditClick(meal)}
-                                        aria-label={`Edit ${meal.name}`}
+                                        disabled={reorderMode}
                                         title="Edit"
-                                    >
-                                        ✎
+                                    >✎
                                     </button>
                                 </div>
                             </li>
                         ))}
                     </ul>
+
                 </div>
             )}
 
@@ -302,10 +365,22 @@ const MenuEditor = () => {
                                     value={draft.price}
                                     onChange={(e) => handleChange("price", e.target.value)}
                                     placeholder="e.g., 9.50"
-                                    inputMode="decimal"
                                 />
                                 {errors.price && <div className="errText">{errors.price}</div>}
                             </div>
+                        </div>
+
+                        <div className="formRow rowInline">
+                            <label htmlFor="mealAvailable">Available</label>
+                            <label className="switch">
+                                <input
+                                    id="mealAvailable"
+                                    type="checkbox"
+                                    checked={!!draft.available}
+                                    onChange={(e) => handleChange("available", e.target.checked)}
+                                />
+                                <span className="slider"/>
+                            </label>
                         </div>
 
                         <div className="modalFooter">

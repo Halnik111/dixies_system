@@ -1,4 +1,4 @@
-﻿import React, {useEffect, useRef, useState} from 'react';
+﻿import React, {useEffect, useRef, useState, useMemo} from 'react';
 import apiReq from "../apiReq";
 import './OrderKeyboard.css';
 
@@ -41,68 +41,28 @@ const OrderKeyboard = ({ orders, setOrders, activeOrder }) => {
         setMessage('');
     }
 
-    const menuKeyboard = () => {
-        const fullMenu = {
-            burger: [],
-            sides: [],
-            dip: [],
-            special: [],
-            dessert: [],
-            beer: [],
-            wine: [],
-            coffee: [],
-            lemonade: [],
-            tea: [],
-            beverage: [],
-        }
+    // manual order first, then A–Z
+    const sortByManual = (a, b) =>
+        (a?.sortIndex ?? 1e9) - (b?.sortIndex ?? 1e9) ||
+        a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
 
-        menu.map(item => {
-            switch (item.category) {
-                case 'burger':
-                    fullMenu.burger.push(item);
-                    break;
-                    
-                case 'sides':
-                    fullMenu.sides.push(item);
-                    break;
 
-                case 'dip':
-                    fullMenu.dip.push(item);
-                    break;
-
-                case 'special':
-                    fullMenu.special.push(item);
-                    break;
-
-                case 'dessert':
-                    fullMenu.dessert.push(item);
-                    break;
-
-                case 'beer':
-                    fullMenu.beer.push(item);
-                    break;
-
-                case 'wine':
-                    fullMenu.wine.push(item);
-                    break;
-
-                case 'coffee':
-                    fullMenu.coffee.push(item);
-                    break;
-
-                case 'lemonade':
-                    fullMenu.lemonade.push(item);
-                    break;
-
-                case 'tea':
-                    fullMenu.tea.push(item);
-                    break;
-
-                case 'beverage':
-                    fullMenu.beverage.push(item);
-                    break;
-            }
+    const groupedMenu = useMemo(() => {
+        const base = {
+            burger: [], sides: [], dip: [], special: [], dessert: [],
+            beer: [], wine: [], coffee: [], lemonade: [], tea: [], beverage: []
+        };
+        (menu || []).forEach(item => {
+            if (base[item.category]) base[item.category].push(item);
         });
+        Object.keys(base).forEach(k => {
+            base[k] = base[k].slice().sort(sortByManual);
+        });
+        return base;
+    }, [menu]);
+    
+    const menuKeyboard = () => {
+        
         
         
 
@@ -111,29 +71,33 @@ const OrderKeyboard = ({ orders, setOrders, activeOrder }) => {
             switchControl === 'meals' ?
                 (
                     <div className={'order_keyboard_keys'}>
-                        <div className={'order_keyboard_category'}>{keyBoardKey(fullMenu.burger)}</div>
-                        <div className={'order_keyboard_category'}>{keyBoardKey(fullMenu.sides)}</div>
-                        <div className={'order_keyboard_category'}>{keyBoardKey(fullMenu.dip)}</div>
-                        <div className={'order_keyboard_category'}>{keyBoardKey(fullMenu.special)}</div>
-                        <div className={'order_keyboard_category'}>{keyBoardKey(fullMenu.dessert)}</div>
+                        <div className={'order_keyboard_category'}>{keyBoardKey(groupedMenu.burger)}</div>
+                        <div className={'order_keyboard_category'}>{keyBoardKey(groupedMenu.sides)}</div>
+                        <div className={'order_keyboard_category'}>{keyBoardKey(groupedMenu.dip)}</div>
+                        <div className={'order_keyboard_category'}>{keyBoardKey(groupedMenu.special)}</div>
+                        <div className={'order_keyboard_category'}>{keyBoardKey(groupedMenu.dessert)}</div>
                     </div>
                 ) : (
                     <div className={'order_keyboard_keys'}>
-                        <div className={'order_keyboard_category'}>{keyBoardKey(fullMenu.beverage)}</div>
-                        <div className={'order_keyboard_category'}>{keyBoardKey(fullMenu.lemonade)}</div>
-                        <div className={'order_keyboard_category'}>{keyBoardKey(fullMenu.beer)}</div>
-                        <div className={'order_keyboard_category'}>{keyBoardKey(fullMenu.coffee)}</div>
-                        <div className={'order_keyboard_category'}>{keyBoardKey(fullMenu.wine)}</div>
-                        <div className={'order_keyboard_category'}>{keyBoardKey(fullMenu.tea)}</div>
+                        <div className={'order_keyboard_category'}>{keyBoardKey(groupedMenu.beverage)}</div>
+                        <div className={'order_keyboard_category'}>{keyBoardKey(groupedMenu.lemonade)}</div>
+                        <div className={'order_keyboard_category'}>{keyBoardKey(groupedMenu.beer)}</div>
+                        <div className={'order_keyboard_category'}>{keyBoardKey(groupedMenu.coffee)}</div>
+                        <div className={'order_keyboard_category'}>{keyBoardKey(groupedMenu.wine)}</div>
+                        <div className={'order_keyboard_category'}>{keyBoardKey(groupedMenu.tea)}</div>
                     </div>
                 )
 
         )
     };
 
-    const keyBoardKey = (category) => {
-        return category.map(item => <div key={item._id} className={`menuKey ${item.category}`}
-                                         onClick={() => handleClick(item)}>
+    const keyBoardKey = (category = []) => {
+        return category.map(item => <div key={item._id}
+                                         className={`menuKey ${item.category} ${item.available === false ? "unavailable" : ""}`}
+                                         onClick={() => (item.available === false ? null : handleClick(item))}
+                                         aria-disabled={item.available === false}
+                                         title={item.available === false ? `${item.name} — unavailable` : item.name}
+        >
             {item.name}
         </div>)
     };

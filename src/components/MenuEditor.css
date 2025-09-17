@@ -234,6 +234,87 @@
     border-top: 1px solid rgba(255,255,255,0.08);
 }
 
+/* header actions inline */
+.headerActions { display: flex; gap: 8px; align-items: center; }
+.ghostBtn.activeToggle { border-color: indianred; color: indianred; }
+
+/* drag mode visuals */
+.mealList.reorderOn .editBtn { opacity: .45; pointer-events: none; }
+.mealItem.draggable { cursor: grab; }
+.mealItem.draggable:active { cursor: grabbing; }
+.mealLeft { display: flex; align-items: center; gap: 10px; }
+.dragHandle {
+    font-size: 18px;
+    opacity: .7;
+    padding: 0 4px;
+    user-select: none;
+}
+
+/* drop hint */
+.mealItem.draggable:hover { background: rgba(255,255,255,.06); }
+.mealItem.draggable + .mealItem.draggable { position: relative; }
+.mealItem.draggable:hover::after {
+    content: "";
+    position: absolute;
+    left: 12px; right: 12px; bottom: -1px;
+    height: 2px; background: indianred;
+    opacity: .6;
+}
+
+/* sticky save bar */
+.reorderBar {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 10px 8px;
+    background: linear-gradient(180deg, rgba(40,44,52,0) 0%, rgba(40,44,52,.9) 35%, rgba(40,44,52,1) 100%);
+    border-top: 1px solid rgba(255,255,255,.12);
+    margin: 0 6px;
+    z-index: 2;
+}
+
+.rowInline { flex-direction: row; align-items: center; justify-content: space-between; }
+
+/* switch */
+.switch { position: relative; width: 46px; height: 26px; display: inline-block; }
+.switch input { display: none; }
+.switch .slider {
+    position: absolute; inset: 0;
+    background: #262a33;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 999px;
+    transition: background .18s ease, border-color .18s ease;
+}
+.switch .slider::before {
+    content: "";
+    position: absolute; top: 50%; left: 3px; transform: translateY(-50%);
+    width: 20px; height: 20px; border-radius: 50%;
+    background: rgba(255,255,255,0.9);
+    transition: transform .18s ease, background .18s ease;
+}
+.switch input:checked + .slider {
+    background: rgba(205, 92, 92, 0.22);
+    border-color: indianred;
+}
+.switch input:checked + .slider::before {
+    transform: translate(20px, -50%);
+    background: indianred;
+}
+
+.mealItem.isUnavailable .mealName,
+.mealItem.isUnavailable .mealPrice { color: indianred; }
+.mealItem.isUnavailable { background: rgba(205, 92, 92, 0.06); }
+.badgeSoldOut {
+    border: 1px solid indianred;
+    color: indianred;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 12px;
+    margin-right: 6px;
+}
+
 /* Small screens */
 @media (max-width: 420px) {
     .mealPrice { min-width: 56px; }

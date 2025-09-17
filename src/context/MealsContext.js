@@ -33,6 +33,11 @@ export const MealsProvider = ({ children }) => {
         console.log(meal)
     };
 
+    const reorderMeals = async ({ category, ids }) => {
+        await apiReq.patch("/meals/reorder", {category, ids});
+        return {reorderMeals};
+    }
+
     useEffect(() => {
         loadMeals();
     }, []);
@@ -44,7 +49,7 @@ export const MealsProvider = ({ children }) => {
     }, [socket]);
 
     return (
-        <MealsContext.Provider value={{ mealsById, refreshMeals: loadMeals, updateMeal, createMeal }}>
+        <MealsContext.Provider value={{ mealsById, refreshMeals: loadMeals, updateMeal, createMeal, reorderMeals }}>
             {children}
         </MealsContext.Provider>
     );

@@ -81,3 +81,11 @@ input:focus {
     border: 1px solid white;
     align-items: center;
 }
+
+.menuKey.unavailable {
+    border-color: indianred !important;
+    color: indianred !important;
+    opacity: .75;
+    cursor: not-allowed;
+}
+.menuKey.unavailable:active { transform: none; }
