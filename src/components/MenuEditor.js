@@ -9,6 +9,8 @@ const MenuEditor = () => {
     const [reorderMode, setReorderMode] = useState(false);
     const [orderedMeals, setOrderedMeals] = useState([]);
     const [dragIndex, setDragIndex] = useState(null);
+    const listRef = useRef(null);
+    const [isTouchDragging, setIsTouchDragging] = useState(false);
 
     // ---- Build categories & selection ------------------------------------------------
     const categories = useMemo(() => {
@@ -75,7 +77,19 @@ const MenuEditor = () => {
     }, [categoryKeys.length, updateFades]);
 
     // ---- Drag & drop reordering -----------------------------------------------------
-    const onDragStart = (i) => setDragIndex(i);
+    const onDragStart = (i, e) => {
+        setDragIndex(i);
+        // hide the default ghost for cleaner look
+        if (e?.dataTransfer) {
+            e.dataTransfer.effectAllowed = "move";
+            const img = new Image();
+            img.src =
+                "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+            e.dataTransfer.setDragImage(img, 0, 0);
+        }
+    };
+    const onDragEnd = () => setDragIndex(null);
+
     const onDragOver = (e) => e.preventDefault();
     const onDrop = (i) => {
         if (dragIndex === null) return;
@@ -85,6 +99,49 @@ const MenuEditor = () => {
         setOrderedMeals(next);
         setDragIndex(null);
     };
+
+    // ----- Touch drag helpers -----
+    const onTouchStartItem = (e, i) => {
+        if (!reorderMode) return;
+        setDragIndex(i);
+        setIsTouchDragging(true);
+    };
+
+    const onTouchMoveList = (e) => {
+        if (!reorderMode || !isTouchDragging) return;
+        const t = e.touches && e.touches[0];
+        if (!t) return;
+
+        const elem = document.elementFromPoint(t.clientX, t.clientY);
+        if (!elem) return;
+        const li = elem.closest("li.mealItem");
+        if (!li || !listRef.current?.contains(li)) return;
+
+        const targetIndex = Number(li.dataset.index);
+        if (!Number.isInteger(targetIndex) || targetIndex === dragIndex) return;
+
+        const next = [...orderedMeals];
+        const [m] = next.splice(dragIndex, 1);
+        next.splice(targetIndex, 0, m);
+        setOrderedMeals(next);
+        setDragIndex(targetIndex);
+    };
+
+    const onTouchEndList = () => {
+        if (!isTouchDragging) return;
+        setIsTouchDragging(false);
+        setDragIndex(null);
+    };
+
+    // manual order first, then A–Z
+    const sortByManual = (a, b) =>
+        (a?.sortIndex ?? 1e9) - (b?.sortIndex ?? 1e9) ||
+        a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
+
+    const visibleMeals = useMemo(() => {
+        const base = (categories[selectedCategory] || []).slice().sort(sortByManual);
+        return reorderMode ? orderedMeals : base;
+    }, [categories, selectedCategory, reorderMode, orderedMeals]);
 
     const saveOrder = async () => {
         if (!selectedCategory) return;
@@ -238,15 +295,26 @@ const MenuEditor = () => {
 
             {selectedCategory && (
                 <div className="menuCategory">
-                    <ul className={`mealList ${reorderMode ? "reorderOn" : ""}`}>
-                        {(orderedMeals.length ? orderedMeals : (categories[selectedCategory] || [])).map((meal, i) => (
+                    <ul
+                        ref={listRef}
+                        className={`mealList ${reorderMode ? "reorderOn" : ""}`}
+                        onTouchMove={onTouchMoveList}
+                        onTouchEnd={onTouchEndList}
+                        onTouchCancel={onTouchEndList}
+                    >
+
+                        {visibleMeals.map((meal, i) => (
                             <li
                                 key={meal._id}
-                                className={`mealItem ${reorderMode ? "draggable" : ""} mealItem ${meal.available === false ? "isUnavailable" : ""}`}
+                                className={`mealItem ${reorderMode ? "draggable" : ""} mealItem ${meal.available === false ? "isUnavailable" : ""} ${reorderMode && dragIndex === i ? "isDragging" : ""}`}
                                 draggable={reorderMode}
-                                onDragStart={() => onDragStart(i)}
+                                onDragStart={(e) => onDragStart(i, e)}
+                                onTouchStart={(e) => onTouchStartItem(e, i)}
                                 onDragOver={onDragOver}
+                                onDragEnd={onDragEnd}
                                 onDrop={() => onDrop(i)}
+                                data-index={i}
+                                aria-grabbed={reorderMode && dragIndex === i}
                             >
                                 <div className="mealLeft">
                                     {reorderMode && <span className="dragHandle" aria-hidden>☰</span>}
@@ -300,7 +368,6 @@ const MenuEditor = () => {
                                     value={draft.name}
                                     onChange={(e) => handleChange("name", e.target.value)}
                                     placeholder="e.g., Cheeseburger"
-                                    autoFocus
                                 />
                                 {errors.name && <div className="errText">{errors.name}</div>}
                             </div>
@@ -318,6 +385,7 @@ const MenuEditor = () => {
                                         onChange={opt => handleChange("category", opt?.value)}
                                         options={categoryKeys.map(c => ({value: c, label: c}))}
                                         isDisabled={categoryKeys.length === 0}
+                                        isSearchable={false}
                                         placeholder="Select category"
                                         styles={{
                                             control: (base, state) => ({

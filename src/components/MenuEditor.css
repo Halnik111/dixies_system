@@ -250,6 +250,31 @@
     user-select: none;
 }
 
+/* smoother animation baseline */
+.mealItem {
+    transition: background 140ms ease, transform 100ms ease, box-shadow 140ms ease;
+}
+
+/* highlight the item being dragged (mouse or touch) */
+.mealItem.isDragging {
+    background: rgba(205, 92, 92, 0.10);
+    transform: scale(0.995);
+    box-shadow:
+            0 8px 22px rgba(0, 0, 0, 0.45),
+            0 0 0 1px rgba(205, 92, 92, 0.45) inset; /* subtle inner ring */
+    z-index: 3; /* float above neighbors */
+}
+
+/* emphasize the handle while dragging */
+.mealItem.isDragging .dragHandle {
+    color: indianred;
+    opacity: 1;
+}
+
+/* minor perf hint while in reorder mode */
+.mealList.reorderOn .mealItem { will-change: transform; }
+
+
 /* drop hint */
 .mealItem.draggable:hover { background: rgba(255,255,255,.06); }
 .mealItem.draggable + .mealItem.draggable { position: relative; }
@@ -260,6 +285,14 @@
     height: 2px; background: indianred;
     opacity: .6;
 }
+
+/* Disable native scrolling/selection while touch-dragging */
+.mealList.reorderOn {
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
 
 /* sticky save bar */
 .reorderBar {
