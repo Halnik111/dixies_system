@@ -2,6 +2,9 @@
 import "./Dashboard.css";
 import React, {useEffect, useMemo, useState} from "react";
 import { useOrders } from "../context/OrdersContext";
+import MiniSparkline from "../components/charts/MiniSparkLine";
+import SemiGauge from "../components/charts/SemiGauge";
+
 
 /* ---------- date helpers ---------- */
 const startOfToday = () => {
@@ -75,20 +78,49 @@ const getPriceNum = (p) => {
     if (typeof p === "number") return p;
     if (typeof p === "string") return Number(p) || 0;
     if (typeof p === "object") {
-        if (p.$numberInt) return Number(p.$numberInt) || 0;
-        if (p.$numberDouble) return Number(p.$numberDouble) || 0;
-        if (p.$numberDecimal) return Number(p.$numberDecimal) || 0;
+        return Number(p.$numberInt || p.$numberDouble || p.$numberDecimal || 0);
     }
     return 0;
 };
 
-/* y-m-d key without timezone drift */
 const ymd = (d) => {
-    const y = d.getFullYear();
-    const m = String(d.getMonth()+1).padStart(2,"0");
-    const da = String(d.getDate()).padStart(2,"0");
+    const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,"0"), da = String(d.getDate()).padStart(2,"0");
     return `${y}-${m}-${da}`;
 };
+
+/** returns [{x:'YYYY-MM-DD', total, count, aov}] from orders in the selected range */
+const buildDailyAgg = (orders, since) => {
+    const map = new Map();
+    for (const o of (orders || [])) {
+        // normalize createdAt you already use elsewhere
+        const raw = o.createdAt?.$date?.$numberLong || o.createdAt?.$date || o.createdAt;
+        const dt = new Date(typeof raw === "string" ? raw : Number(raw));
+        if (!dt || isNaN(dt)) continue;
+        const key = ymd(new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()));
+        const prev = map.get(key) || { total: 0, count: 0 };
+        map.set(key, { total: prev.total + getPriceNum(o.price), count: prev.count + 1 });
+    }
+    // ensure continuity from 'since' to today
+    const today = new Date(); today.setHours(0,0,0,0);
+    const cur = new Date(since.getFullYear(), since.getMonth(), since.getDate());
+    const out = [];
+    while (cur <= today) {
+        const key = ymd(cur);
+        const { total = 0, count = 0 } = map.get(key) || {};
+        out.push({ x: key, total: +total.toFixed(2), count, aov: count ? +(total / count).toFixed(2) : 0 });
+        cur.setDate(cur.getDate() + 1);
+    }
+    return out;
+};
+
+const niceCeil = (n) => {
+    if (!isFinite(n) || n <= 0) return 10;
+    const pow = Math.pow(10, Math.floor(Math.log10(n)));
+    const base = n / pow;
+    const step = base <= 1 ? 1 : base <= 2 ? 2 : base <= 5 ? 5 : 10;
+    return step * pow;
+};
+
 
 /* Build daily series from orders in [since..today] */
 const buildDailySeries = (orders, since) => {
@@ -207,6 +239,18 @@ export default function Dashboard() {
                     startOfYear(now);
     }, [range]);
 
+    // Average Spend (AOV) calculations
+    const ordersCount = (orders || []).length;
+    const avgSpend = ordersCount ? +(totalSales / ordersCount).toFixed(2) : 0;
+
+    const dailyAgg = useMemo(() => buildDailyAgg(orders, sinceForSeries), [orders, sinceForSeries]);
+    const aovSeries = useMemo(() => dailyAgg.map(d => ({ x: d.x, y: d.aov })), [dailyAgg]);
+
+    // pick a pleasant gauge max (slightly above peak AOV)
+    //const peakAOV = Math.max(0, ...aovSeries.map(d => d.y), avgSpend);
+    const peakAOV = 15; // fixed target for now
+    const gaugeMax = niceCeil(peakAOV * 1.2);
+    
     // derive a minimal UI list here; your charts can use the same 'orders'
     const list = useMemo(() => orders ?? [], [orders]);
 
@@ -231,9 +275,9 @@ export default function Dashboard() {
                         <h3 className="card-title">Total Sales — {RANGE_LABELS[range]}</h3>
                         {isLoading && <span className="kpi-subtle">Loading…</span>}
                     </div>
-                    {error && <div className="kpi-subtle" style={{ color: "#ff6b6b" }}>{error}</div>}
+                    {error && <div className="kpi-subtle" style={{color: "#ff6b6b"}}>{error}</div>}
                     <div className="kpi-value">{fmtEUR(totalSales)}</div>
-                    <div className="kpi-subtle">{series.length} day{series.length===1?"":"s"} in range</div>
+                    <div className="kpi-subtle">{series.length} day{series.length === 1 ? "" : "s"} in range</div>
                 </section>
 
                 {/* Line chart card */}
@@ -242,8 +286,31 @@ export default function Dashboard() {
                         <h3 className="card-title">Sales by Day</h3>
                         {isLoading && <span className="kpi-subtle">Loading…</span>}
                     </div>
-                    <LineChart data={series} height={200} />
+                    <LineChart data={series} height={200}/>
                 </section>
+                {/* Average Spend card */}
+                <section className="card">
+                    <div className="card-header">
+                        <h3 className="card-title">Average Spend</h3>
+                    </div>
+
+                    <div className="avg-card">
+                        {/* left: interactive sparkline of daily AOV */}
+                        <MiniSparkline data={aovSeries}/>
+
+                        {/* right: big number + gauge with €0 and €target labels */}
+                        <div className="avg-right">
+                            <div className="avg-number">
+                                {new Intl.NumberFormat(undefined, {
+                                    style: "currency",
+                                    currency: "EUR"
+                                }).format(avgSpend)}
+                            </div>
+                            <SemiGauge value={avgSpend} max={gaugeMax}/>
+                        </div>
+                    </div>
+                </section>
+
                 {/* Example card showing the filtered orders; your other cards/graphs can use the same 'orders' */}
                 <section className="card">
                     <div className="card-header">
@@ -251,7 +318,7 @@ export default function Dashboard() {
                         {isLoading && <span className="card-subtle">Loading…</span>}
                     </div>
 
-                    {error && <div className="card-subtle" style={{ color: "#ff6b6b" }}>{error}</div>}
+                    {error && <div className="card-subtle" style={{color: "#ff6b6b"}}>{error}</div>}
 
                     <div className="orders-list">
                         {list.map((o) => {
