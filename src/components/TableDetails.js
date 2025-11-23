@@ -22,7 +22,7 @@ const TableDetails = ({ table, setActiveTable }) => {
         if (table?.status === 'taken') {
             const activeOrder = tableOrders.filter(i => i._id === table.tableOrderId)[0];
             let index = 0;
-            const hydrated = activeOrder.orders.map(o => ({
+            const hydrated = activeOrder.orders?.map(o => ({
                 ...o,
                 meals: (o.mealIDs || []).map(id => ({
                     index: index++,

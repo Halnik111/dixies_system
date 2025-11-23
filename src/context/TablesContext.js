@@ -1,10 +1,10 @@
-import {createContext, useContext, useEffect, useState} from "react";
-import {io} from "socket.io-client";
+import { createContext, useContext, useEffect, useState } from "react";
+import { io } from "socket.io-client";
 import apiReq from "../apiReq";
 
 export const TablesContext = createContext();
 
-export const TablesProvider = ({children}) => {
+export const TablesProvider = ({ children }) => {
     const [tables, setTables] = useState([]);
     const [loading, setLoading] = useState(true);
     const [socket, setSocket] = useState(null);
@@ -12,58 +12,73 @@ export const TablesProvider = ({children}) => {
     useEffect(() => {
         // Fetch tables on mount
         fetchTables();
-        
-        //Initialize socket connection
-        // const socketInstance = io('https://dixiessystembackend-production.up.railway.app', {
-        //     reconnection: true,
-        //     reconnectionAttempts: Infinity,
-        //     reconnectionDelay: 1000,
-        //     reconnectionDelayMs: 5000,
-        // });
-        // setSocket(socketInstance);
-        setSocket(io({                       // same origin as frontend gateway
-            withCredentials: true,
-            reconnection: true,
-            reconnectionAttempts: Infinity,
-            reconnectionDelay: 1000,
-        }));
-        
-        // return () => {
-        //     // Cleanup socket connection on unmount
-        //     socketInstance.disconnect();
-        // }
-    },[]);
-    
-    useEffect(  () =>{
-        socket?.on('tableChanged', async () => {
-            console.log('Table change');
-            await fetchTables();
-        });
 
-        socket?.on('tableClosed', async () => {
-            console.log('Table closed');
+        // Decide socket URL based on environment
+        const socketInstance =
+            process.env.NODE_ENV === "production"
+                ? io({                       // same origin as frontend gateway
+                    withCredentials: true,
+                    reconnection: true,
+                    reconnectionAttempts: Infinity,
+                    reconnectionDelay: 1000,
+                })
+                : io("http://localhost:8080", {  // dev backend
+                    withCredentials: true,
+                    reconnection: true,
+                    reconnectionAttempts: Infinity,
+                    reconnectionDelay: 1000,
+                });
+
+        setSocket(socketInstance);
+
+        // Cleanup on unmount
+        return () => {
+            socketInstance.disconnect();
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleTableChanged = async () => {
+            console.log("Table change");
             await fetchTables();
-        });
-    }, [socket])
+        };
+
+        const handleTableClosed = async () => {
+            console.log("Table closed");
+            await fetchTables();
+        };
+
+        socket.on("tableChanged", handleTableChanged);
+        socket.on("tableClosed", handleTableClosed);
+
+        // Cleanup listeners when socket changes/unmounts
+        return () => {
+            socket.off("tableChanged", handleTableChanged);
+            socket.off("tableClosed", handleTableClosed);
+        };
+    }, [socket]);
 
     const fetchTables = async () => {
         setLoading(true);
-        await apiReq.get("/tables/getTables")
-            .then(res => {
+        await apiReq
+            .get("/tables/getTables")
+            .then((res) => {
                 setTables(res.data);
                 setLoading(false);
             })
             .catch(() => {
                 setLoading(false);
                 console.error("Failed to fetch tables");
-            })
-    }
+            });
+    };
 
     return (
         <TablesContext.Provider value={{ tables, loading, fetchTables, socket }}>
             {children}
         </TablesContext.Provider>
-    )
+    );
 };
 
 // Custom hook for easy usage
