@@ -14,19 +14,24 @@ export const TablesProvider = ({children}) => {
         fetchTables();
         
         //Initialize socket connection
-        const socketInstance = io('https://dixiessystembackend-production.up.railway.app', {
+        // const socketInstance = io('https://dixiessystembackend-production.up.railway.app', {
+        //     reconnection: true,
+        //     reconnectionAttempts: Infinity,
+        //     reconnectionDelay: 1000,
+        //     reconnectionDelayMs: 5000,
+        // });
+        // setSocket(socketInstance);
+        setSocket(io({                       // same origin as frontend gateway
+            withCredentials: true,
             reconnection: true,
             reconnectionAttempts: Infinity,
             reconnectionDelay: 1000,
-            reconnectionDelayMs: 5000,
-        });
-        setSocket(socketInstance);
-        //setSocket(io("ws://localhost:8080"));
+        }));
         
-        return () => {
-            // Cleanup socket connection on unmount
-            socketInstance.disconnect();
-        }
+        // return () => {
+        //     // Cleanup socket connection on unmount
+        //     socketInstance.disconnect();
+        // }
     },[]);
     
     useEffect(  () =>{
