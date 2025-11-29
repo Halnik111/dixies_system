@@ -15,7 +15,7 @@ export const TablesProvider = ({ children }) => {
         console.log('Fetching tables on mount');
 
         // Decide socket URL based on environment
-        const socketInstance = io({                       // same origin as frontend gateway
+        const socketInstance = io("https://dixiessystembackend-production.up.railway.app", {                       // same origin as frontend gateway
                     path: '/socket.io',
                     withCredentials: true,
                     transports: ['websocket', 'polling'],
