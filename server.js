@@ -6,7 +6,7 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 const app = express();
 
 // Your backend URL
-const BACKEND_URL = process.env.REQ_URL;
+const BACKEND_URL = "https://dixiessystembackend-production.up.railway.app";
 console.log("Using backend URL:", BACKEND_URL);
 
 // Proxy all API routes
