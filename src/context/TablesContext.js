@@ -12,18 +12,13 @@ export const TablesProvider = ({ children }) => {
     useEffect(() => {
         // Fetch tables on mount
         fetchTables();
+        console.log('Fetching tables on mount');
 
         // Decide socket URL based on environment
-        const socketInstance =
-            process.env.NODE_ENV === "production"
-                ? io({                       // same origin as frontend gateway
+        const socketInstance = io({                       // same origin as frontend gateway
+                    path: '/socket.io',
                     withCredentials: true,
-                    reconnection: true,
-                    reconnectionAttempts: Infinity,
-                    reconnectionDelay: 1000,
-                })
-                : io("http://localhost:8080", {  // dev backend
-                    withCredentials: true,
+                    transports: ['websocket', 'polling'],
                     reconnection: true,
                     reconnectionAttempts: Infinity,
                     reconnectionDelay: 1000,

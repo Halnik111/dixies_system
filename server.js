@@ -6,9 +6,8 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 const app = express();
 
 // Your backend URL
-const BACKEND_URL =
-    process.env.REQ_URL ||
-    "https://dixiessystembackend-production.up.railway.app";
+const BACKEND_URL = process.env.REQ_URL;
+console.log("Using backend URL:", BACKEND_URL);
 
 // Proxy all API routes
 app.use(
@@ -23,8 +22,17 @@ app.use(
     })
 );
 
+app.use(
+    "/socket.io",
+    createProxyMiddleware({
+        target: BACKEND_URL,
+        changeOrigin: true,
+        ws: true, // Important for WebSocket support
+    })
+)
+
 // Serve React build
-const buildPath = path.join(__dirname, "..", "build"); // CRA uses build/
+const buildPath = path.join(__dirname, ".", "build"); // CRA uses build/
 app.use(express.static(buildPath));
 
 // SPA fallback (must be LAST and must NOT use path params)
