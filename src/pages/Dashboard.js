@@ -4,6 +4,7 @@ import React, {useEffect, useMemo, useState} from "react";
 import { useOrders } from "../context/OrdersContext";
 import MiniSparkline from "../components/charts/MiniSparkLine";
 import SemiGauge from "../components/charts/SemiGauge";
+import LineChart from "../components/charts/LineChart";
 
 
 /* ---------- date helpers ---------- */
@@ -142,73 +143,8 @@ const buildDailySeries = (orders, since) => {
     return series;
 };
 
-/* ----- Minimal SVG Line Chart (no libs) ----- */
-const LineChart = ({ data, height = 200, padding = { l: 32, r: 8, t: 12, b: 24 } }) => {
-    const w = 600; // virtual width (SVG viewBox); responsive via CSS
-    const h = height;
-    const vb = `0 0 ${w} ${h}`;
-    const n = data.length;
-    const maxY = Math.max(0, ...data.map(d => d.y));
-    const minY = 0;
-    const ix = (i) => {
-        if (n <= 1) return padding.l;
-        return padding.l + (i * (w - padding.l - padding.r)) / (n - 1);
-    };
-    const iy = (v) => {
-        const rng = (maxY - minY) || 1;
-        const t = (v - minY) / rng;
-        return padding.t + (h - padding.t - padding.b) * (1 - t);
-    };
-
-    const path = data.map((d,i) => `${i===0?"M":"L"} ${ix(i)} ${iy(d.y)}`).join(" ");
-    const ticksX = [0, Math.floor((n-1)/2), Math.max(0,n-1)].filter((v,i,a)=>a.indexOf(v)===i);
-    const tickLabel = (i) => {
-        const s = data[i]?.x || "";
-        // show as M/D
-        const [Y,M,D] = s.split("-").map(Number);
-        return `${M}/${D}`;
-    };
-    const yTickVals = [minY, maxY];
-
-    return (
-        <div className="chart-wrap">
-            <svg className="chart-svg" viewBox={vb} preserveAspectRatio="none" aria-label="Sales line chart">
-                {/* axes */}
-                <line className="chart-axis" x1={padding.l} y1={h - padding.b} x2={w - padding.r} y2={h - padding.b}/>
-                <line className="chart-axis" x1={padding.l} y1={padding.t} x2={padding.l} y2={h - padding.b}/>
-
-                {/* grid & y ticks */}
-                {yTickVals.map((v,idx)=>(
-                    <g key={idx}>
-                        <line className="chart-grid" x1={padding.l} y1={iy(v)} x2={w - padding.r} y2={iy(v)}/>
-                        <text x={padding.l - 6} y={iy(v)} fill="rgba(230,232,236,.7)" fontSize="10" textAnchor="end" dominantBaseline="middle">
-                            €{v.toFixed(0)}
-                        </text>
-                    </g>
-                ))}
-
-                {/* x ticks */}
-                {ticksX.map((ti,idx)=>(
-                    <g key={idx}>
-                        <line className="chart-grid" x1={ix(ti)} y1={h - padding.b} x2={ix(ti)} y2={h - padding.b + 4}/>
-                        <text x={ix(ti)} y={h - padding.b + 14} fill="rgba(230,232,236,.7)" fontSize="10" textAnchor="middle">
-                            {tickLabel(ti)}
-                        </text>
-                    </g>
-                ))}
-
-                {/* series */}
-                <path className="chart-line" d={path}/>
-                {data.map((d,i)=>(
-                    <circle key={i} className="chart-dot" cx={ix(i)} cy={iy(d.y)} r="2"/>
-                ))}
-            </svg>
-        </div>
-    );
-};
-
 export default function Dashboard() {
-    const { orders, isLoading, error, refresh } = useOrders();
+    const { orders, isLoading, error, refresh, last365 } = useOrders();
     const [range, setRange] = useState("month"); // default UI: This Month
 
     // Load when range changes
@@ -242,6 +178,7 @@ export default function Dashboard() {
     // Average Spend (AOV) calculations
     const ordersCount = (orders || []).length;
     const avgSpend = ordersCount ? +(totalSales / ordersCount).toFixed(2) : 0;
+    const totalAvgSpend = last365 ? +(last365.totalSales / (last365.orders.length || 1)).toFixed(2) : 0;
 
     const dailyAgg = useMemo(() => buildDailyAgg(orders, sinceForSeries), [orders, sinceForSeries]);
     const aovSeries = useMemo(() => dailyAgg.map(d => ({ x: d.x, y: d.aov })), [dailyAgg]);
@@ -306,7 +243,7 @@ export default function Dashboard() {
                                     currency: "EUR"
                                 }).format(avgSpend)}
                             </div>
-                            <SemiGauge value={avgSpend} max={gaugeMax}/>
+                            <SemiGauge baseline={totalAvgSpend} value={avgSpend}/>
                         </div>
                     </div>
                 </section>

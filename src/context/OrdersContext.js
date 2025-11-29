@@ -42,6 +42,11 @@ export const OrderProvider = ({ children }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
 
+    // NEW: independent state that always holds last 365 days
+    const [orders365, setOrders365] = useState([]);
+    const [isLoading365, setIsLoading365] = useState(false);
+    const [error365, setError365] = useState("");
+
     // ------- existing sockets for active table orders -------
     useEffect(() => {
         fetchActiveTableOrders();
@@ -116,10 +121,56 @@ export const OrderProvider = ({ children }) => {
         }
     };
 
+    const loadLast365 = async () => {
+        setIsLoading365(true);
+        setError365("");
+        try {
+            const since = new Date(Date.now() - 365 * 86400000); // 365 days ago
+            const params = new URLSearchParams();
+            params.set("since", since.toISOString());
+            params.set("limit", String(5000)); // or whatever cap you want
+
+            const res = await apiReq.get(
+                `/order/listOrders?${params.toString()}`
+            );
+
+            const list = Array.isArray(res.data) ? res.data : res.data.orders || [];
+            setOrders365(list);
+            return list;
+        } catch (e) {
+            setError365(e.message || "Failed to load last 365 days");
+            return [];
+        } finally {
+            setIsLoading365(false);
+        }
+    };
+
+    // last365 derived from its own state
+    const last365Orders = useMemo(
+        () => selectLastNDays(orders365, 365),
+        [orders365]
+    );
+
+    const last365 = {
+        orders: last365Orders,
+        totalSales: useMemo(
+            () =>
+                last365Orders.reduce(
+                    (sum, o) => sum + (Number(o.price) || 0),
+                    0
+                ),
+            [last365Orders]
+        ),
+    };
+
     // auto-load last 30 days on mount (dashboard)
     useEffect(() => {
         const since = new Date(Date.now() - 30 * 86400000);
         refresh({ since, limit: 1000 });
+    }, []);
+
+    useEffect(() => {
+        loadLast365();  
     }, []);
 
     const value = {
@@ -136,6 +187,12 @@ export const OrderProvider = ({ children }) => {
         isLoading,
         error,
         refresh,
+
+        // dedicated 365 days
+        last365,
+        loadLast365,
+        isLoading365,
+        error365,
     };
 
     return <OrderContext.Provider value={value}>{children}</OrderContext.Provider>;
