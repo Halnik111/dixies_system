@@ -2,7 +2,7 @@
 const { createProxyMiddleware } = require("http-proxy-middleware");
 
 module.exports = function (app) {
-    const BACKEND_URL = "https://dixiessystembackend-production.up.railway.app";
+    const BACKEND_URL = process.env.REQ_URL;
     console.log("setupProxy loaded"); // this shows in the npm start terminal
 
     app.use(
