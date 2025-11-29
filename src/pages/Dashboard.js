@@ -175,6 +175,7 @@ export default function Dashboard() {
                     startOfYear(now);
     }, [range]);
 
+
     // Average Spend (AOV) calculations
     const ordersCount = (orders || []).length;
     const avgSpend = ordersCount ? +(totalSales / ordersCount).toFixed(2) : 0;
@@ -193,6 +194,44 @@ export default function Dashboard() {
 
     const series = useMemo(() => buildDailySeries(orders, sinceForSeries), [orders, sinceForSeries]);
 
+    // cumulative daily sales
+    const cumulativeSeries = useMemo(() => {
+        let sum = 0;
+        return series.map((point) => {
+            sum += point.y;
+            return {
+                x: point.x,   // same date
+                y: Number(sum.toFixed(2)),
+            };
+        });
+    }, [series]);
+
+    const cumulativeCountSeries = useMemo(() => {
+        let running = 0;
+        return dailyAgg.map((d) => {
+            running += d.count;  // count of orders that day
+            return {
+                x: d.x,  // date
+                y: running,
+            };
+        });
+    }, [dailyAgg]);
+
+
+    const cumulativeMoneySeries = cumulativeSeries;      // the price running total
+    const cumulativeOrdersSeries = cumulativeCountSeries; // the count running total
+
+    // 1. max values
+    const maxRevenue = Math.max(...cumulativeMoneySeries.map(p => p.y), 0);
+    const maxOrders = Math.max(...cumulativeOrdersSeries.map(p => p.y), 1);
+
+// 2. scale orders to revenue axis
+    const scaledOrderSeries = cumulativeOrdersSeries.map(p => ({
+        x: p.x,
+        y: (p.y / maxOrders) * maxRevenue
+    }));
+
+    
     const fmtEUR = (n) => new Intl.NumberFormat(undefined, { style: "currency", currency: "EUR" }).format(n);
 
 
@@ -215,6 +254,17 @@ export default function Dashboard() {
                     {error && <div className="kpi-subtle" style={{color: "#ff6b6b"}}>{error}</div>}
                     <div className="kpi-value">{fmtEUR(totalSales)}</div>
                     <div className="kpi-subtle">{series.length} day{series.length === 1 ? "" : "s"} in range</div>
+                    {isLoading && <span className="kpi-subtle">Loading…</span>}
+                    {cumulativeSeries.length <= 1 ? (
+                        <div className="kpi-subtle">Not enough data to draw a line.</div>
+                    ) : (
+                        <LineChart
+                            data={[
+                                { id: "Revenue", axis:"left", data: cumulativeMoneySeries },
+                                { id: "Orders", axis: "scaled", data: cumulativeCountSeries },
+                            ]}
+                        />
+                    )}
                 </section>
 
                 {/* Line chart card */}
